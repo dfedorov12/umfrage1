@@ -200,9 +200,11 @@ obwohl gespeichert wurde.
   | `Access-Control-Allow-Origin` | `*` |
   | `Content-Type` | `application/json` |
 
-  Statt `*` kann auch die konkrete Herkunft stehen:
-  `https://dfedorov12.github.io` (bzw. später die eigene Domäne). Das ist sauberer,
-  muss aber bei jedem Umzug nachgezogen werden.
+  Statt `*` kann auch die konkrete Herkunft stehen – dann aber **beide** pflegen,
+  weil die Seite unter zwei Adressen erreichbar ist: `https://umfrage.dihag.de`
+  und `https://dfedorov12.github.io`. Das ist sauberer, muss aber bei jedem Umzug
+  nachgezogen werden; `*` ist hier vertretbar, weil der Endpunkt ohnehin nur
+  entgegennimmt und nichts herausgibt außer dem Fragebogen.
 
 ---
 

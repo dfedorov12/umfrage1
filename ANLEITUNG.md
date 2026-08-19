@@ -6,7 +6,7 @@ Diese Anleitung braucht keine IT-Kenntnisse. Technische Einrichtung: siehe READM
 
 ## 1. Umfrage freischalten
 
-1. https://dfedorov12.github.io/umfrage1/auswertung.html öffnen und mit dem
+1. https://umfrage.dihag.de/auswertung.html öffnen und mit dem
    Firmenkonto anmelden.
 2. Reiter **Verwaltung** → in der Tabelle die Umfrage suchen.
 3. Auf **Status …** klicken, bis dort **Aktiv** steht.
@@ -20,7 +20,7 @@ Diese Anleitung braucht keine IT-Kenntnisse. Technische Einrichtung: siehe READM
 **Link** (Knopf *Link* in der Verwaltung kopiert ihn):
 
 ```
-https://dfedorov12.github.io/umfrage1/?u=newsletter-2026
+https://umfrage.dihag.de/?u=newsletter-2026
 ```
 
 Der Link funktioniert **ohne Anmeldung**, auf jedem Handy, auch von zu Hause.

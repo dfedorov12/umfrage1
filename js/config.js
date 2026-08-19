@@ -21,10 +21,11 @@ const UMFRAGE_CONFIG = {
   tenantId: "fdb70646-023a-403b-a4b9-1f474a935123",
 
   // App-Registrierung „Dihag Umfragen“ (Objekt-ID ef5776e1-0f5a-4d69-89d8-b8b7605bb2c9).
-  // Unter „Authentifizierung → Single-Page-Anwendung“ müssen die Redirect-URIs
-  // eingetragen sein – js/auth.js leitet sie aus der aufgerufenen Adresse ab:
-  //   https://dfedorov12.github.io/umfrage1/
-  //   https://umfrage.dihag.de/            (falls später eigene Domäne)
+  // Unter „Authentifizierung → Single-Page-Anwendung“ müssen BEIDE Redirect-URIs
+  // eingetragen sein – js/auth.js leitet sie aus der aufgerufenen Adresse ab und
+  // die Anwendung ist unter beiden erreichbar (setup-umfragen-app.ps1 trägt sie ein):
+  //   https://umfrage.dihag.de/              (eigene Domäne, produktiv)
+  //   https://dfedorov12.github.io/umfrage1/ (Ausweichadresse, leitet dorthin um)
   clientId: "f7474539-80e1-4bbb-b1ed-5536068581cb",
 
   scopes: [

@@ -5,8 +5,9 @@ Speicherung in SharePoint, Auswertung nur für ausgewählte M365-Konten.
 
 | | |
 |---|---|
-| **Teilnahme** | https://dfedorov12.github.io/umfrage1/ (offen, ohne Anmeldung) |
-| **Auswertung** | https://dfedorov12.github.io/umfrage1/auswertung.html (M365-Anmeldung + Rolle) |
+| **Teilnahme** | **https://umfrage.dihag.de/** (offen, ohne Anmeldung) |
+| **Auswertung** | **https://umfrage.dihag.de/auswertung.html** (M365-Anmeldung + Rolle) |
+| **Ausweichadresse** | https://dfedorov12.github.io/umfrage1/ (leitet auf die eigene Domäne um) |
 | **Erste Umfrage** | „Ihr Newsletter – machen Sie mit!" (`?u=newsletter-2026`) |
 | **App-Registrierung** | „Dihag Umfragen", Client `f7474539-80e1-4bbb-b1ed-5536068581cb` |
 | **Daten** | `dihag.sharepoint.com/sites/IT` → `Umfragen`, `Umfrage_Antworten`, `Umfrage_Kontakte` |
@@ -55,10 +56,20 @@ Wer sich meldet, gibt damit nicht preis, was er geantwortet hat.
 3. **HTTP-POST-URL** des Triggers in `js/config.js` bei `endpunkt` eintragen.
    Solange das Feld leer ist, läuft die Teilnahmeseite im *Probelauf*: alles
    bedienbar, nichts wird gespeichert.
-4. **Redirect-URI** `https://dfedorov12.github.io/umfrage1/` in der App-Registrierung
-   „Dihag Umfragen" unter *Authentifizierung → Single-Page-Anwendung* eintragen,
-   sonst scheitert die Anmeldung zur Auswertung mit AADSTS50011.
-   Graph-Berechtigungen (delegiert): `User.Read`, `Sites.ReadWrite.All`.
+4. **App-Registrierung anbinden** – `setup-umfragen-app.ps1` (Microsoft.Graph-Modul)
+   trägt beide **Redirect-URIs** als Single-Page-Anwendung ein und meldet die
+   delegierten Berechtigungen `User.Read` + `Sites.ReadWrite.All` an:
+
+   ```powershell
+   Connect-MgGraph -Scopes "Application.ReadWrite.All","Sites.ReadWrite.All"
+   ./setup-umfragen-app.ps1
+   ```
+
+   Von Hand im Portal geht es genauso: *Authentifizierung → Single-Page-Anwendung* →
+   `https://umfrage.dihag.de/` **und** `https://dfedorov12.github.io/umfrage1/`.
+   Fehlt die Adresse, bricht die Anmeldung mit **AADSTS50011** ab.
+   `js/auth.js` leitet die Redirect-URI aus dem Aufruf ab und läuft deshalb
+   unter beiden Adressen.
 5. **Umfrage anlegen** – *Verwaltung → „newsletter-2026 übernehmen"*, danach
    Status auf **Aktiv** setzen.
 6. **Auswerter freischalten** – in der Liste `AppPermissions` auf `/sites/IT`:
@@ -86,6 +97,7 @@ js/auswertung.js      Oberfläche der Auswertung
 js/verwaltung.js      Umfragen anlegen, bearbeiten, freischalten
 umfragen/*.json       mitgelieferte Fragebogen-Vorlagen
 flow/ANLEITUNG-FLOW.md  Bauanleitung für den Power-Automate-Flow
+setup-umfragen-app.ps1  Redirect-URIs + Graph-Berechtigungen + Auswerter
 provision-umfragen-listen.ps1  Listen + Rechte
 tests/test-analyse.mjs  Rechenkerne ohne Browser prüfen
 ```
@@ -123,6 +135,12 @@ tests/test-analyse.mjs  Rechenkerne ohne Browser prüfen
 ```bash
 node tests/test-analyse.mjs
 ```
+
+Die eigene Domäne `umfrage.dihag.de` läuft über einen CNAME auf
+`dfedorov12.github.io` (Datei `CNAME` im Repository, HTTPS von GitHub).
+`js/auth.js` bildet die Redirect-URI aus der aufgerufenen Adresse – die
+Anwendung funktioniert deshalb unter beiden Adressen, solange beide in der
+App-Registrierung stehen.
 
 Lokal ausprobieren: `python -m http.server 8772 --directory umfrage1`
 (Eintrag `umfrage1` in `.claude/launch.json`).
