@@ -110,6 +110,50 @@ const DATEN = (() => {
       }));
   }
 
+  /* ── Auswerter (Liste AppPermissions) ──────────────────────────
+     Dieselbe zentrale Rechteliste wie Ticketsystem, Orgchart und „Rund um
+     den Job". Hier werden nur Zeilen mit App = `appKey` angefasst – Zeilen
+     anderer Anwendungen bleiben unberührt, auch die Sammelzeilen App = „*".  */
+
+  const F_RECHTE = ["Title", "UserEmail", "App", "Role"];
+
+  /** Alle Rechtezeilen; `fremd` = Zeilen, die für andere Apps oder für „*"
+   *  gelten und deshalb hier nur angezeigt, nicht bearbeitet werden.
+   *  `null`, wenn die Liste fehlt oder nicht lesbar ist. */
+  async function auswerter() {
+    const rows = await GRAPH.listItems(C.permSite, C.permList, F_RECHTE);
+    if (!rows) return null;
+    const eigene = [], fremd = [];
+    for (const r of rows) {
+      const e = {
+        itemId: r.id,
+        email: String(r.UserEmail || "").toLowerCase(),
+        app: r.App || "",
+        rolle: String(r.Role || "").toLowerCase()
+      };
+      if (!e.email) continue;
+      (e.app === C.appKey ? eigene : e.app === "*" ? fremd : null)?.push(e);
+    }
+    eigene.sort((a, b) => a.email.localeCompare(b.email));
+    return { eigene, fremd };
+  }
+
+  /** Anlegen oder Rolle ändern. E-Mail immer klein schreiben – rechte.js
+   *  vergleicht kleingeschrieben, sonst greift der Eintrag nicht. */
+  async function setzeAuswerter(email, rolle, itemId) {
+    const felder = {
+      Title: email.toLowerCase(),
+      UserEmail: email.toLowerCase(),
+      App: C.appKey,
+      Role: rolle
+    };
+    return itemId
+      ? GRAPH.updateItem(C.permSite, C.permList, itemId, { Role: rolle })
+      : GRAPH.addItem(C.permSite, C.permList, felder);
+  }
+
+  const loescheAuswerter = itemId => GRAPH.deleteItem(C.permSite, C.permList, itemId);
+
   /* ── Einrichtung ───────────────────────────────────────────────── */
 
   /** Legt fehlende Listen an. Braucht Schreibrechte auf der Site.
@@ -164,6 +208,7 @@ const DATEN = (() => {
   return {
     umfragen, speichereUmfrage, setzeStatus,
     antworten, loescheAntwort, kontakte,
+    auswerter, setzeAuswerter, loescheAuswerter,
     listenAnlegen, pruefeListen, vorlage
   };
 })();

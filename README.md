@@ -72,10 +72,19 @@ Wer sich meldet, gibt damit nicht preis, was er geantwortet hat.
    unter beiden Adressen.
 5. **Umfrage anlegen** – *Verwaltung → „newsletter-2026 übernehmen"*, danach
    Status auf **Aktiv** setzen.
-6. **Auswerter freischalten** – in der Liste `AppPermissions` auf `/sites/IT`:
-   `UserEmail` = Person, `App` = `umfrage1`, `Role` = `viewer` (nur lesen),
-   `editor` (Umfragen pflegen) oder `admin` (zusätzlich Listen/Antworten verwalten).
-   Ohne Eintrag: kein Zugriff. `administrator@dihag.com` ist immer Admin.
+6. **Auswerter freischalten** – als `administrator@dihag.com` anmelden und unter
+   *Verwaltung → Auswerter* E-Mail-Adresse und Rolle eintragen:
+   `viewer` (nur lesen), `editor` (Umfragen pflegen) oder `admin` (zusätzlich
+   Listen einrichten und Auswerter pflegen). Ohne Eintrag: kein Zugriff.
+   `administrator@dihag.com` hat laut `js/config.js` immer die Rolle `admin`,
+   auch ohne Listeneintrag – damit die Anwendung administrierbar bleibt.
+
+   Darunter liegt weiterhin die zentrale Liste `AppPermissions` auf `/sites/IT`
+   (`UserEmail`, `App` = `umfrage1`, `Role`); wer lieber dort pflegt oder das
+   Ganze skripten will, kann das unverändert tun –
+   `setup-umfragen-app.ps1 -Auswerter "…" -Rolle viewer` macht genau das.
+   Zeilen anderer Anwendungen und Sammelzeilen mit `App` = `*` fasst die
+   Verwaltung nicht an, sie werden nur zur Information angezeigt.
 
 ---
 
@@ -150,7 +159,8 @@ im Repository.
 
 ## Grenzen
 
-* Der Trigger „Wenn eine HTTP-Anforderung eingeht" ist ein **Premium**-Connector.
+* Der Trigger „Wenn eine HTTP-Anforderung empfangen wird" (Connector „Anforderung",
+  zu finden unter *Sofortiger Cloud-Flow*) ist ein **Premium**-Connector.
   Ohne Lizenz siehe „Alternative ohne Premium" in `flow/ANLEITUNG-FLOW.md`.
 * Die Endpunkt-URL steht im Quelltext der Seite. Wer sie kennt, kann Antworten
   einsenden (nicht lesen, nicht löschen). Gegen Automaten helfen Honigtopf-Feld,

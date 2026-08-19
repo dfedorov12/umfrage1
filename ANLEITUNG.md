@@ -63,7 +63,29 @@ Klammern dabei. Und je kleiner die Gruppe, desto eher lässt sich erraten, wer
 geantwortet hat. Ergebnisse nach Standort deshalb erst ab etwa fünf Antworten
 weitergeben.
 
-## 4. Umfrage beenden
+## 4. Auswerter selbst freischalten
+
+Wer die Ergebnisse sehen darf, wird **in der Anwendung** gepflegt – dafür muss
+niemand mehr in SharePoint oder in die IT-Skripte.
+
+1. Als **administrator@dihag.com** anmelden (dieses Konto ist immer Administrator).
+2. Reiter **Verwaltung** → Abschnitt **Auswerter**.
+3. E-Mail-Adresse eintragen, Rolle wählen, **Hinzufügen**:
+
+   | Rolle | darf |
+   |---|---|
+   | `viewer` | Ergebnisse ansehen, filtern, drucken, als CSV exportieren |
+   | `editor` | zusätzlich Umfragen anlegen, bearbeiten und freischalten |
+   | `admin`  | zusätzlich Listen einrichten und Auswerter pflegen |
+
+4. Rolle ändern: einfach in der Zeile eine andere auswählen.
+   Zugriff entziehen: **Entfernen**.
+
+Die Änderung greift, sobald die betreffende Person die Seite neu lädt.
+Wer nicht in der Liste steht, sieht ein Schloss – der Standard ist „kein Zugriff",
+nicht „darf lesen".
+
+## 5. Umfrage beenden
 
 Status auf **Beendet** setzen. Die Daten bleiben in SharePoint, die Auswertung
 funktioniert unverändert weiter.
@@ -84,9 +106,8 @@ aufzugeben. Der Browser merkt sich die Teilnahme und weist beim zweiten Mal dara
 hin. Bei einer internen Befragung ist das erfahrungsgemäß ausreichend.
 
 **Wer sieht die Ergebnisse?**
-Nur Konten, die in der Liste `AppPermissions` für die App `umfrage1` eingetragen
-sind. Alle anderen sehen beim Aufruf der Auswertung ein Schloss. Neue Auswerter
-meldet die IT frei.
+Nur die Konten, die unter *Verwaltung → Auswerter* eingetragen sind. Alle anderen
+sehen beim Aufruf der Auswertung ein Schloss – auch dann, wenn sie den Link kennen.
 
 **Wir wollen eine zweite Umfrage (z. B. zum neuen Intranet).**
 Das geht ohne Programmierung: In der Verwaltung eine bestehende Umfrage öffnen,

@@ -10,7 +10,7 @@ technische Konto, nicht der Absender.
 Handy / PC im Werk          Power Automate                    SharePoint
 ─────────────────────       ─────────────────────────         ────────────────────
 index.html                  „Wenn eine HTTP-Anforderung
-  │  POST (JSON als            eingeht"                       Umfragen
+  │  POST (JSON als            empfangen wird"                Umfragen
   │  text/plain)          ──►   ├─ aktion = definition ──────► (FragenJson lesen)
   │                             └─ aktion = antwort  ────────► Umfrage_Antworten
   ◄── Antwort mit CORS-Kopf                        └─ Kontakt ► Umfrage_Kontakte
@@ -22,7 +22,7 @@ index.html                  „Wenn eine HTTP-Anforderung
 
 | Punkt | Bemerkung |
 |---|---|
-| **Lizenz** | Der Trigger „Wenn eine HTTP-Anforderung eingeht" ist ein **Premium**-Connector. Ohne passende Power-Automate-Lizenz lässt sich der Flow zwar bauen, aber nicht dauerhaft betreiben. Falls keine Lizenz vorhanden ist: siehe „Alternative ohne Premium" ganz unten. |
+| **Lizenz** | Der Trigger „Wenn eine HTTP-Anforderung empfangen wird" (Connector „Anforderung") ist **Premium**. Ohne passende Power-Automate-Lizenz lässt sich der Flow zwar bauen, aber nicht dauerhaft betreiben. Falls keine Lizenz vorhanden ist: siehe „Alternative ohne Premium" ganz unten. |
 | **Verbindungskonto** | Ein Konto, das in die drei Listen schreiben darf – sinnvollerweise `administrator@dihag.com` wie beim ZAPP-Cron. Dieses Konto erscheint später bei **jeder** Antwort als „Erstellt von". |
 | **Listen** | `Umfragen`, `Umfrage_Antworten`, `Umfrage_Kontakte` auf `https://dihag.sharepoint.com/sites/IT` (siehe `provision-umfragen-listen.ps1` oder Verwaltung → „Listen jetzt anlegen"). |
 | **Umgebung** | Am besten eine Lösung („Solution") in der Standardumgebung, damit der Flow nicht an einem persönlichen Konto hängt. |
@@ -31,10 +31,38 @@ index.html                  „Wenn eine HTTP-Anforderung
 
 ## 1. Trigger anlegen
 
-**Neuer Flow → Automatisierter Cloud-Flow → Trigger „Wenn eine HTTP-Anforderung eingeht"**
+Der Trigger heißt **„Wenn eine HTTP-Anforderung empfangen wird"** und steckt im
+eingebauten Connector **„Anforderung"** (englisch: *Request*).
+
+**So kommt man hin:**
+
+1. https://make.powerautomate.com öffnen, links **Erstellen**.
+2. **Sofortiger Cloud-Flow** wählen – *nicht* „Automatisierter Cloud-Flow".
+   Dort taucht der Trigger nämlich gar nicht auf, weil er nicht auf ein Ereignis
+   in einem Dienst reagiert, sondern auf einen Aufruf von außen.
+3. Namen vergeben (z. B. „Umfrage-Annahme"), dann im Suchfeld
+   **„Anforderung"** eingeben (oder englisch „Request", je nach Spracheinstellung)
+   und **„Wenn eine HTTP-Anforderung empfangen wird"** auswählen.
+   *Notfalls:* leeren Flow erstellen und im Trigger-Suchfeld „HTTP" eingeben.
+
+Einstellungen:
 
 * Methode: **POST**
 * Anforderungstext-JSON-Schema: **leer lassen**
+
+> ### Trigger nicht auffindbar?
+> Dann fehlt fast immer die **Premium-Lizenz** – der Connector „Anforderung" ist
+> ein Premium-Connector. Erkennbar am blauen Rautezeichen („Premium") neben dem
+> Namen; ohne Lizenz lässt sich der Flow entweder nicht speichern oder wird gar
+> nicht erst angeboten.
+>
+> Prüfen: in Power Automate rechts oben aufs Konto-Symbol → **Meine Lizenzen**,
+> oder im Microsoft-365-Admin-Center unter *Abrechnung → Ihre Produkte* nach
+> **Power Automate Premium** (früher „per user plan") suchen.
+>
+> Wenn keine Lizenz da ist: **Abschnitt „Alternative ohne Premium" ganz unten** –
+> die Teilnahmeseite und die Auswertung bleiben dabei unverändert, es wird nur
+> die Annahmestelle ausgetauscht.
 
 > Warum kein Schema? Die Teilnahmeseite schickt den Rumpf bewusst als
 > `Content-Type: text/plain`. Damit gilt die Anfrage im Browser als „einfache"
