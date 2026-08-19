@@ -48,7 +48,9 @@ Wer sich meldet, gibt damit nicht preis, was er geantwortet hat.
 ## Einrichtung (Reihenfolge)
 
 1. **Listen anlegen** – `provision-umfragen-listen.ps1` (PnP.PowerShell) oder in der
-   Anwendung unter *Verwaltung → Listen jetzt anlegen*.
+   Anwendung unter *Verwaltung → Listen jetzt anlegen*. Wer die Listen von Hand
+   baut oder die Berechtigungen prüfen will: **LISTEN-ANLEGEN.md** (Spalten,
+   Fallen bei internen Namen und Rich-Text, Rechteempfehlung je Liste).
    Mit `-RechteSetzen` werden die Antwortlisten zusätzlich für alle außer dem
    Flow-Konto und den Auswertern gesperrt – ohne das kann jeder, der die Site
    `/sites/IT` lesen darf, die Rohantworten direkt in SharePoint öffnen.
@@ -106,6 +108,7 @@ js/auswertung.js      Oberfläche der Auswertung
 js/verwaltung.js      Umfragen anlegen, bearbeiten, freischalten
 umfragen/*.json       mitgelieferte Fragebogen-Vorlagen
 flow/ANLEITUNG-FLOW.md  Bauanleitung für den Power-Automate-Flow
+LISTEN-ANLEGEN.md       Spalten und Berechtigungen der SharePoint-Listen
 setup-umfragen-app.ps1  Redirect-URIs + Graph-Berechtigungen + Auswerter
 provision-umfragen-listen.ps1  Listen + Rechte
 tests/test-analyse.mjs  Rechenkerne ohne Browser prüfen
