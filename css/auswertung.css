@@ -1,0 +1,158 @@
+/* ══════════════════════════════════════════════════════════════════
+   DIHAG Umfragen – Auswertung und Verwaltung
+   Ergänzt css/style.css (Farben, Schrift, Grundelemente kommen von dort).
+   Gedacht für den Schreibtisch: breiter, dichter, druckbar.
+   ══════════════════════════════════════════════════════════════════ */
+
+:root { --maxw-breit: 1180px; }
+
+body.auswertung { font-size: 15px; }
+body.auswertung main { max-width: var(--maxw-breit); padding-bottom: 60px; }
+body.auswertung header.top .inner { max-width: var(--maxw-breit); }
+
+/* ── Anmeldung / kein Zugriff ─────────────────────────────────────── */
+
+#boot {
+  position: fixed; inset: 0; z-index: 9999;
+  background: linear-gradient(160deg, var(--navy) 0%, #10182b 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px; color: #fff; text-align: center; padding: 24px;
+}
+#boot .logo { background: #fff; border-radius: 14px; padding: 18px 30px; }
+#boot .logo img { display: block; height: 42px; }
+#boot .sub {
+  font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--lichtblau);
+}
+#boot .spinner {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.18); border-top-color: var(--orange);
+  animation: dreh .8s linear infinite;
+}
+@keyframes dreh { to { transform: rotate(360deg); } }
+#boot .fehler {
+  max-width: 620px; background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.25);
+  border-radius: var(--radius); padding: 14px 18px; font-size: 14px; text-align: left;
+}
+
+/* ── Kopf ─────────────────────────────────────────────────────────── */
+
+header.top .rechts { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+header.top .person { text-align: right; font-size: 13px; line-height: 1.3; }
+header.top .person .rolle {
+  display: inline-block; margin-top: 2px; padding: 1px 8px; border-radius: 99px;
+  background: var(--orange); color: #fff; font-size: 11px; font-weight: 600;
+  letter-spacing: .04em; text-transform: uppercase;
+}
+header.top button {
+  font: inherit; font-size: 13px; padding: 7px 12px; border-radius: 8px;
+  background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.28);
+  cursor: pointer;
+}
+header.top button:hover { background: rgba(255,255,255,.2); }
+
+/* ── Reiter ───────────────────────────────────────────────────────── */
+
+nav.reiter { background: #fff; border-bottom: 1px solid var(--border); }
+nav.reiter .inner {
+  max-width: var(--maxw-breit); margin: 0 auto; padding: 0 18px;
+  display: flex; gap: 4px; overflow-x: auto;
+}
+nav.reiter button {
+  font: inherit; font-weight: 600; font-size: 15px; color: var(--muted);
+  background: none; border: 0; border-bottom: 3px solid transparent;
+  padding: 13px 14px; cursor: pointer; white-space: nowrap;
+}
+nav.reiter button:hover { color: var(--navy); }
+nav.reiter button[aria-selected="true"] { color: var(--navy); border-bottom-color: var(--orange); }
+
+/* ── Filterleiste ─────────────────────────────────────────────────── */
+
+.filter {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;
+  padding: 14px 16px; background: #fff; border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 16px;
+}
+.filter .feld { display: flex; flex-direction: column; gap: 3px; min-width: 170px; }
+.filter label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.filter select, .filter input { margin: 0; padding: 9px 11px; font-size: 15px; }
+.filter .schub { margin-left: auto; display: flex; gap: 8px; }
+.filter .btn { font-size: 15px; min-height: 40px; padding: 8px 14px; }
+
+/* ── Kennzahlen ───────────────────────────────────────────────────── */
+
+.kacheln { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.kachel {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px; box-shadow: var(--shadow);
+}
+.kachel .zahl { font-size: 30px; font-weight: 700; color: var(--navy); line-height: 1.1; }
+.kachel .txt { font-size: 13px; color: var(--muted); margin-top: 3px; }
+.kachel.akzent { border-left: 4px solid var(--orange); }
+
+/* ── Ergebnisblöcke ───────────────────────────────────────────────── */
+
+.block {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 18px 20px; margin-bottom: 14px;
+  break-inside: avoid;
+}
+.block > h3 { font-size: 17px; margin-bottom: 4px; }
+.block .frageinfo { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+.leer { color: var(--muted); font-size: 13px; margin: 6px 0; }
+
+.schnitt { display: flex; align-items: baseline; gap: 10px; margin: 6px 0 12px; }
+.schnitt b { font-size: 34px; line-height: 1; }
+.schnitt span { font-size: 13px; color: var(--muted); }
+
+.balken-liste { display: flex; flex-direction: column; gap: 6px; }
+.bl-zeile { display: grid; grid-template-columns: minmax(120px, 34%) 1fr 92px; gap: 12px; align-items: center; }
+.bl-label { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bl-spur { height: 22px; background: var(--border-2); border-radius: 6px; overflow: hidden; }
+.bl-spur i { display: block; height: 100%; background: var(--azur); border-radius: 6px; transition: width .4s ease; }
+.bl-wert { font-size: 14px; font-weight: 600; color: var(--navy); text-align: right; }
+.bl-wert span { display: block; font-weight: 400; font-size: 12px; color: var(--muted); }
+
+ul.texte { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+ul.texte li { border-left: 3px solid var(--lichtblau); background: #f8fafd; border-radius: 0 8px 8px 0; padding: 9px 12px; }
+ul.texte .tx { white-space: pre-line; }
+ul.texte .tm { font-size: 12px; color: var(--muted); margin-top: 3px; }
+details.sonst { margin-top: 10px; }
+details.sonst summary { cursor: pointer; font-size: 14px; color: var(--azur); }
+
+/* ── Tabellen (Vergleich, Kontakte, Verwaltung) ───────────────────── */
+
+table.tab { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.tab th, table.tab td { padding: 9px 10px; border-bottom: 1px solid var(--border-2); text-align: left; vertical-align: top; }
+table.tab th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+table.tab td.zahl, table.tab th.zahl { text-align: right; font-variant-numeric: tabular-nums; }
+table.tab tr:hover td { background: #f8fafd; }
+.wrap-x { overflow-x: auto; }
+
+.pille { display: inline-block; padding: 2px 9px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+.pille.aktiv { background: var(--green-bg); color: var(--green); }
+.pille.entwurf { background: #fff6e8; color: #7a4a00; }
+.pille.beendet { background: var(--border-2); color: var(--muted); }
+
+/* ── Verwaltung ───────────────────────────────────────────────────── */
+
+.editor textarea {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 13px; min-height: 320px; white-space: pre; overflow-wrap: normal; overflow-x: auto;
+}
+.linkbox {
+  display: flex; gap: 8px; align-items: center; margin-top: 10px;
+  background: #f8fafd; border: 1px dashed var(--border); border-radius: var(--radius); padding: 10px 12px;
+}
+.linkbox code { font-size: 13px; word-break: break-all; flex: 1; }
+
+/* ── Druck ────────────────────────────────────────────────────────── */
+
+@media print {
+  header.top, nav.reiter, .filter, .keinDruck { display: none !important; }
+  body.auswertung { background: #fff; font-size: 12px; }
+  .block, .kachel { box-shadow: none; border-color: #ccc; }
+  main { max-width: none; padding: 0; }
+}
+
+/* Kleine Schaltflächen in Tabellen */
+.btn.mini { font-size: 13px; min-height: 32px; padding: 5px 10px; margin: 2px 2px 2px 0; }

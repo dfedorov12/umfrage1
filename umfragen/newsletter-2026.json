@@ -1,0 +1,213 @@
+{
+  "id": "newsletter-2026",
+  "titel": "Ihr Newsletter – machen Sie mit!",
+  "untertitel": "Umfrage zur Weiterentwicklung des DIHAG-Newsletters",
+  "einleitung": "Liebe Kolleginnen und Kollegen,\n\nunser DIHAG-Newsletter soll für ALLE in der Gruppe da sein – ganz besonders für Sie in der Produktion und in den Werken. Einige von Ihnen haben uns gesagt, dass der Newsletter sie bisher noch nicht richtig anspricht. Das nehmen wir ernst.\n\nDeshalb möchten wir ihn gemeinsam mit Ihnen weiterentwickeln – zu IHREM Newsletter. Sagen Sie uns: Was gefällt Ihnen? Was fehlt? Was können wir besser machen?\n\nDie Umfrage dauert nur etwa 5 Minuten, ist anonym und funktioniert bequem am Handy. Jede Antwort hilft uns. Vielen Dank, dass Sie sich die Zeit nehmen!\n\nIhr Kommunikationsteam",
+  "dauerMinuten": 5,
+  "abschluss": "Vielen Dank für Ihre Antworten!\n\nIhre Rückmeldung geht anonym an das Kommunikationsteam und hilft uns, den Newsletter besser zu machen.",
+  "fragen": [
+    {
+      "id": "a1",
+      "typ": "abschnitt",
+      "text": "Kurz zu Ihnen",
+      "hilfe": "Zwei schnelle Fragen – damit wir Ihre Antworten besser einordnen können."
+    },
+    {
+      "id": "standort",
+      "typ": "dropdown",
+      "text": "In welchem Werk / an welchem Standort arbeiten Sie?",
+      "pflicht": false,
+      "optionen": [
+        "Holding / HQ",
+        "Meuselwitz Guss",
+        "DIHAG Gienanth",
+        "Schmiedeberg Guss",
+        "DIHAG Solutions",
+        "SHB Leipzig Guss",
+        "Coswig Guss",
+        "DIHAG Zaigler",
+        "EWA Arnstadt Guss",
+        "Lintorf Guss",
+        "Anderer Standort",
+        "möchte ich nicht angeben"
+      ],
+      "auswertung": "standort"
+    },
+    {
+      "id": "bereich",
+      "typ": "radio",
+      "text": "Wo arbeiten Sie überwiegend?",
+      "pflicht": false,
+      "optionen": [
+        "In der Produktion / Werkstatt / Gießerei",
+        "In der Verwaltung / im Büro",
+        "Sonstiges"
+      ],
+      "auswertung": "bereich"
+    },
+    {
+      "id": "gefallen",
+      "typ": "skala",
+      "text": "Wie gut gefällt Ihnen der Newsletter insgesamt?",
+      "pflicht": true,
+      "min": 1,
+      "max": 5,
+      "minLabel": "gefällt mir gar nicht",
+      "maxLabel": "gefällt mir sehr gut"
+    },
+    {
+      "id": "verstaendlich",
+      "typ": "skala",
+      "text": "Wie gut verstehen Sie die Inhalte?",
+      "pflicht": true,
+      "min": 1,
+      "max": 5,
+      "minLabel": "oft schwer verständlich",
+      "maxLabel": "alles gut verständlich"
+    },
+    {
+      "id": "angesprochen",
+      "typ": "skala",
+      "text": "Wie gut fühlen Sie sich als Mitarbeiter aus der Produktion angesprochen?",
+      "pflicht": true,
+      "min": 1,
+      "max": 5,
+      "minLabel": "gar nicht",
+      "maxLabel": "voll und ganz"
+    },
+    {
+      "id": "haeufigkeit",
+      "typ": "radio",
+      "text": "Wie oft lesen Sie den Newsletter?",
+      "pflicht": false,
+      "optionen": [
+        "Immer",
+        "Meistens",
+        "Manchmal",
+        "Selten",
+        "Nie"
+      ]
+    },
+    {
+      "id": "laenge",
+      "typ": "radio",
+      "text": "Wie finden Sie die Länge des Newsletters?",
+      "pflicht": false,
+      "optionen": [
+        "Genau richtig",
+        "Zu lang",
+        "Zu kurz"
+      ]
+    },
+    {
+      "id": "themen",
+      "typ": "checkbox",
+      "text": "Wie sehr interessieren Sie die folgenden Themen?",
+      "hilfe": "Bitte wählen Sie die für Sie wichtigsten aus (gerne mehrere).",
+      "pflicht": false,
+      "optionen": [
+        "Neuigkeiten aus der Geschäftsführung",
+        "Neues aus meinem eigenen Werk",
+        "Berichte aus den anderen Werken",
+        "Technik, Innovation & Verbesserungen (z. B. Bearbeitungsversuch zur Kokillenbearbeitung in Lintorf)",
+        "Kolleginnen und Kollegen im Porträt (\"DIHAG Gesichter\")",
+        "Nachhaltigkeit & Umwelt (\"Grüner Guss\")",
+        "Arbeitssicherheit",
+        "Aus- und Weiterbildung / HR-Themen",
+        "IT- & Praxistipps für den Alltag",
+        "Zahlen & Finanzlage der Gruppe",
+        "Termine, Jubiläen, offene Stellen",
+        "Unsere Produkte und wo sie eingesetzt werden",
+        "Strategieentwicklung der Gruppe"
+      ],
+      "sonstiges": true,
+      "alternativTyp": "matrix",
+      "matrixMin": 1,
+      "matrixMax": 5,
+      "matrixMinLabel": "gar nicht",
+      "matrixMaxLabel": "sehr"
+    },
+    {
+      "id": "besser",
+      "typ": "checkbox",
+      "text": "Was würde den Newsletter für Sie besser machen?",
+      "pflicht": false,
+      "optionen": [
+        "Mehr Bilder und Fotos aus den Werken",
+        "Kürzere Texte, mehr auf den Punkt",
+        "Einfachere Sprache, weniger Fachbegriffe",
+        "Mehr über Menschen und Kolleginnen/Kollegen",
+        "Mehr über meinen eigenen Standort",
+        "Mehr Mitmach-Möglichkeiten (z. B. Fragen an die Geschäftsführung, eigene Fotos einsenden)",
+        "Kurze Videos zusätzlich zum Text",
+        "Ein Aushang am Schwarzen Brett zusätzlich zur E-Mail",
+        "Inhalte auch in anderer Sprache (für Kolleginnen/Kollegen ohne Deutsch als Muttersprache)"
+      ]
+    },
+    {
+      "id": "a2",
+      "typ": "abschnitt",
+      "text": "Fallen Ihnen weitere Verbesserungsmöglichkeiten ein?"
+    },
+    {
+      "id": "kanal",
+      "typ": "checkbox",
+      "text": "Wie möchten Sie den Newsletter am liebsten lesen?",
+      "pflicht": false,
+      "optionen": [
+        "Per E-Mail",
+        "Als Aushang am Schwarzen Brett",
+        "Im Intranet",
+        "Auf einem Bildschirm/Monitor im Werk",
+        "Auf dem Handy"
+      ]
+    },
+    {
+      "id": "beitragen",
+      "typ": "radio",
+      "text": "Würden Sie in Zukunft selbst gern etwas beitragen – ein Foto, eine Idee oder eine Frage an die Geschäftsführung?",
+      "pflicht": false,
+      "optionen": [
+        "Ja, gerne",
+        "Vielleicht",
+        "Eher nicht"
+      ]
+    },
+    {
+      "id": "a3",
+      "typ": "abschnitt",
+      "text": "Haben Sie eine konkrete Idee?",
+      "hilfe": "Nur wenn Sie mögen – jede Zeile hilft uns."
+    },
+    {
+      "id": "gefaellt_am_besten",
+      "typ": "text",
+      "text": "Was gefällt Ihnen am Newsletter am besten?",
+      "pflicht": false,
+      "zeilen": 3
+    },
+    {
+      "id": "stoert",
+      "typ": "text",
+      "text": "Was stört Sie – oder was sollten wir weglassen?",
+      "pflicht": false,
+      "zeilen": 3
+    },
+    {
+      "id": "thema_zeigen",
+      "typ": "text",
+      "text": "Welches Thema aus Ihrem Arbeitsalltag sollten wir unbedingt einmal zeigen?",
+      "pflicht": false,
+      "zeilen": 3
+    },
+    {
+      "id": "mitmachen",
+      "typ": "text",
+      "text": "Möchten Sie beim Weiterentwickeln mitmachen?",
+      "hilfe": "Wenn Sie Lust haben, gelegentlich Ideen einzubringen oder Teil einer kleinen Redaktions-Runde zu sein, tragen Sie hier freiwillig Ihren Namen oder Ihre E-Mail ein. Freiwillig – Ihre Antworten oben bleiben davon unabhängig.",
+      "pflicht": false,
+      "zeilen": 2,
+      "kontakt": true
+    }
+  ]
+}

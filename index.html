@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Umfrage · DIHAG Foundry Group</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/dihag-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Exo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=1">
+</head>
+<body>
+
+<header class="top">
+  <div class="inner">
+    <img src="assets/dihag-logo.png" alt="DIHAG Foundry Group">
+    <div>
+      <div class="titel" id="kopfTitel">Umfrage</div>
+      <div class="sub">DIHAG Foundry Group</div>
+    </div>
+  </div>
+</header>
+
+<!-- Fortschritt: erscheint erst, wenn die Umfrage begonnen wurde -->
+<div class="fortschritt" id="fortschritt" hidden>
+  <div class="inner">
+    <div class="balken"><i id="balken"></i></div>
+    <div class="text" id="fortschrittText"></div>
+  </div>
+</div>
+
+<main>
+
+  <!-- Laden -->
+  <div class="karte" id="ladeBox">
+    <p>Umfrage wird geladen …</p>
+  </div>
+
+  <!-- Fehler beim Laden -->
+  <div class="karte" id="fehlerBox" hidden>
+    <h2>Umfrage nicht verfügbar</h2>
+    <p id="fehlerText"></p>
+    <p>Bitte wenden Sie sich an das Kommunikationsteam oder die IT.</p>
+  </div>
+
+  <!-- Startseite -->
+  <div class="karte" id="introBox" hidden>
+    <h1 id="introTitel"></h1>
+    <p id="introUnter" class="hilfe" style="color:var(--muted);margin-top:-4px"></p>
+    <div class="intro" id="introText"></div>
+    <div class="hinweis">
+      <b>🔒 Ihre Antworten sind anonym.</b>
+      Es wird keine Anmeldung verlangt und weder Name, Personalnummer noch
+      E-Mail-Adresse gespeichert. Auch die IT kann Antworten nicht einer
+      Person zuordnen.
+    </div>
+    <div id="probelaufHinweis" class="meldung info" hidden>
+      <b>Probelauf.</b> Diese Umfrage ist noch nicht scharf geschaltet –
+      Antworten werden <b>nicht</b> gespeichert.
+    </div>
+    <div id="wiederHinweis" class="meldung info" hidden>
+      Sie haben an dieser Umfrage auf diesem Gerät bereits teilgenommen.
+      Sie können trotzdem erneut antworten.
+    </div>
+    <p style="margin-top:18px">
+      <button class="btn gross" id="startBtn">Umfrage starten</button>
+    </p>
+  </div>
+
+  <!-- Fragen -->
+  <div class="karte" id="schrittBox" hidden>
+    <div id="fragen"></div>
+
+    <!-- Honigtopf gegen automatisierte Einsendungen (unsichtbar) -->
+    <div class="hp" aria-hidden="true">
+      <label>Bitte leer lassen <input type="text" id="hp" tabindex="-1" autocomplete="off"></label>
+    </div>
+
+    <div id="sendeMeldung"></div>
+    <div class="navi">
+      <button class="btn sec" id="zurueckBtn">Zurück</button>
+      <button class="btn" id="weiterBtn">Weiter</button>
+    </div>
+  </div>
+
+  <!-- Danke -->
+  <div class="karte danke" id="dankeBox" hidden>
+    <div class="haken">✓</div>
+    <h2>Vielen Dank!</h2>
+    <p id="dankeText"></p>
+    <div id="dankeProbelauf" class="meldung info" hidden>
+      Probelauf – es wurde nichts gespeichert.
+    </div>
+  </div>
+
+</main>
+
+<footer class="fuss">
+  DIHAG Foundry Group · anonyme Mitarbeiterbefragung ·
+  <a href="auswertung.html">Auswertung (nur für Berechtigte)</a>
+</footer>
+
+<script src="js/config.js?v=1"></script>
+<script src="js/fragebogen.js?v=1"></script>
+<script src="js/api.js?v=1"></script>
+<script src="js/teilnahme.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+/* ══════════════════════════════════════════════════════════════════
+   DIHAG Umfragen – Grundlayout und Teilnahmeseite
+   Corporate Design: Azurblau #17509E · Navy #1A2644 · Anthrazit #424241
+                     Lichtblau #99B7CD · Orange #F08300 · Schrift Exo
+
+   Die Teilnahmeseite wird überwiegend am Handy und in der Produktion
+   benutzt: große Schrift, große Schaltflächen, hoher Kontrast, alles
+   einspaltig. Deshalb ist dieses Stylesheet mobil zuerst gedacht.
+   ══════════════════════════════════════════════════════════════════ */
+
+:root {
+  --azur:      #17509E;
+  --navy:      #1A2644;
+  --anthrazit: #424241;
+  --lichtblau: #99B7CD;
+  --orange:    #F08300;
+
+  --azur-dark: #113f7c;
+  --bg:        #f2f5f9;
+  --card:      #ffffff;
+  --text:      var(--anthrazit);
+  --muted:     #6d7d8e;
+  --border:    #d7e0ea;
+  --border-2:  #eaeff5;
+  --green:     #1e7e34;
+  --green-bg:  #e6f4ea;
+  --red:       #b02a37;
+  --red-bg:    #fdecea;
+  --radius:    12px;
+  --shadow:    0 1px 2px rgba(26,38,68,.06), 0 4px 16px rgba(26,38,68,.06);
+  --maxw:      760px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Exo", "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 17px;          /* bewusst größer als in den übrigen Apps */
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--azur); }
+[hidden] { display: none !important; }
+
+h1, h2, h3 { color: var(--navy); line-height: 1.25; margin: 0 0 10px; }
+
+/* ── Kopfbereich ──────────────────────────────────────────────────── */
+
+header.top {
+  background: var(--navy);
+  color: #fff;
+  padding: 14px 18px;
+}
+header.top .inner {
+  max-width: var(--maxw); margin: 0 auto;
+  display: flex; align-items: center; gap: 14px;
+}
+header.top img { height: 30px; background: #fff; border-radius: 6px; padding: 5px 8px; }
+header.top .titel { font-weight: 600; font-size: 16px; }
+header.top .sub {
+  font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--lichtblau);
+}
+
+/* ── Fortschritt ──────────────────────────────────────────────────── */
+
+.fortschritt { background: #fff; border-bottom: 1px solid var(--border); }
+.fortschritt .inner {
+  max-width: var(--maxw); margin: 0 auto; padding: 10px 18px;
+  display: flex; align-items: center; gap: 12px;
+}
+.fortschritt .balken {
+  flex: 1; height: 8px; border-radius: 99px; background: var(--border-2); overflow: hidden;
+}
+.fortschritt .balken i {
+  display: block; height: 100%; width: 0;
+  background: linear-gradient(90deg, var(--azur), var(--orange));
+  transition: width .3s ease;
+}
+.fortschritt .text { font-size: 13px; color: var(--muted); white-space: nowrap; }
+
+/* ── Inhalt ───────────────────────────────────────────────────────── */
+
+main { max-width: var(--maxw); margin: 0 auto; padding: 18px 14px 90px; }
+
+.karte {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 20px 18px; margin-bottom: 16px;
+}
+
+.intro { white-space: pre-line; }
+.intro .hinweis {
+  margin-top: 18px; padding: 14px 16px; border-radius: var(--radius);
+  background: var(--green-bg); border: 1px solid #bfe3cb; color: #14532d;
+  white-space: normal;
+}
+.intro .hinweis b { display: block; margin-bottom: 2px; }
+
+.abschnitt-titel {
+  margin: 4px 0 18px; padding-bottom: 12px; border-bottom: 3px solid var(--orange);
+}
+.abschnitt-titel h2 { font-size: 22px; margin: 0; }
+.abschnitt-titel p { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
+
+/* ── Fragen ───────────────────────────────────────────────────────── */
+
+.frage { padding: 18px 0; border-top: 1px solid var(--border-2); }
+.frage:first-of-type { border-top: 0; padding-top: 4px; }
+.frage > .text { font-weight: 600; color: var(--navy); font-size: 17px; }
+.frage > .text .pflicht { color: var(--orange); margin-left: 4px; }
+.frage > .hilfe { color: var(--muted); font-size: 15px; margin-top: 3px; }
+.frage.fehlt { background: var(--red-bg); border-radius: var(--radius); padding: 14px; }
+.frage .fehler { color: var(--red); font-size: 14px; margin-top: 8px; font-weight: 600; }
+
+/* Auswahl: die ganze Zeile ist anklickbar, Mindesthöhe 48 px (Handschuhe) */
+.opt {
+  display: flex; align-items: flex-start; gap: 12px;
+  min-height: 48px; padding: 10px 12px; margin-top: 8px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: #fff; cursor: pointer;
+}
+.opt:hover { border-color: var(--lichtblau); background: #fbfdff; }
+.opt input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--azur); flex: none; }
+.opt.gewaehlt { border-color: var(--azur); background: #eef4fc; }
+.opt span { flex: 1; }
+
+.optionen { margin-top: 10px; }
+
+select, input[type="text"], textarea {
+  width: 100%; font: inherit; color: inherit;
+  padding: 12px 14px; border: 1px solid var(--border);
+  border-radius: var(--radius); background: #fff; margin-top: 10px;
+}
+select:focus, input:focus, textarea:focus {
+  outline: 2px solid var(--azur); outline-offset: 1px; border-color: var(--azur);
+}
+textarea { min-height: 90px; resize: vertical; }
+
+/* Skala 1–5 als große Knöpfe */
+.skala { display: flex; gap: 8px; margin-top: 12px; }
+.skala button {
+  flex: 1; min-height: 56px; font: inherit; font-size: 20px; font-weight: 600;
+  color: var(--navy); background: #fff; cursor: pointer;
+  border: 1px solid var(--border); border-radius: var(--radius);
+}
+.skala button:hover { border-color: var(--lichtblau); }
+.skala button[aria-pressed="true"] {
+  background: var(--azur); border-color: var(--azur); color: #fff;
+}
+.skala-labels {
+  display: flex; justify-content: space-between; gap: 10px;
+  font-size: 13px; color: var(--muted); margin-top: 6px;
+}
+.skala-labels span:last-child { text-align: right; }
+
+/* Raster (Matrix): je Zeile eine Skala – am Handy untereinander */
+.matrix-zeile { padding: 12px 0; border-top: 1px dashed var(--border-2); }
+.matrix-zeile:first-child { border-top: 0; }
+.matrix-zeile .mz-text { font-size: 15px; margin-bottom: 6px; }
+
+/* Honigtopf: für Menschen unsichtbar, Bots füllen ihn aus */
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+/* ── Schaltflächen ────────────────────────────────────────────────── */
+
+.btn {
+  font: inherit; font-weight: 600; font-size: 17px;
+  padding: 14px 22px; min-height: 52px;
+  border: 1px solid var(--azur); border-radius: var(--radius);
+  background: var(--azur); color: #fff; cursor: pointer;
+}
+.btn:hover  { background: var(--azur-dark); border-color: var(--azur-dark); }
+.btn:disabled { opacity: .55; cursor: default; }
+.btn.sec    { background: #fff; color: var(--azur); }
+.btn.sec:hover { background: #eef4fc; }
+.btn.gross  { width: 100%; font-size: 18px; min-height: 58px; }
+.btn.senden { background: var(--orange); border-color: var(--orange); }
+.btn.senden:hover { background: #d97600; border-color: #d97600; }
+
+.navi { display: flex; gap: 12px; margin-top: 8px; }
+.navi .btn { flex: 1; }
+
+/* ── Meldungen ────────────────────────────────────────────────────── */
+
+.meldung { padding: 14px 16px; border-radius: var(--radius); margin-top: 14px; }
+.meldung.err  { background: var(--red-bg);   border: 1px solid #f2c4c8; color: var(--red); }
+.meldung.ok   { background: var(--green-bg); border: 1px solid #bfe3cb; color: #14532d; }
+.meldung.info { background: #fff6e8;         border: 1px solid #f6d9ac; color: #7a4a00; }
+
+.danke { text-align: center; padding: 34px 20px; }
+.danke .haken {
+  width: 78px; height: 78px; margin: 0 auto 18px; border-radius: 50%;
+  background: var(--green-bg); color: var(--green);
+  font-size: 42px; line-height: 78px;
+}
+.danke p { white-space: pre-line; }
+
+footer.fuss {
+  max-width: var(--maxw); margin: 0 auto; padding: 8px 18px 30px;
+  color: var(--muted); font-size: 13px; text-align: center;
+}
+
+@media (min-width: 700px) {
+  main { padding: 26px 18px 90px; }
+  .karte { padding: 26px 28px; }
+}

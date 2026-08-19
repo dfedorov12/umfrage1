@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Umfragen · Auswertung · DIHAG Foundry Group</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/dihag-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Exo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=1">
+<link rel="stylesheet" href="css/auswertung.css?v=1">
+</head>
+<body class="auswertung">
+
+<!-- ══ Anmeldung ═══════════════════════════════════════════════════ -->
+<div id="boot">
+  <div class="logo"><img src="assets/dihag-logo.png" alt="DIHAG Foundry Group"></div>
+  <div class="sub">Umfragen · Auswertung</div>
+  <div class="spinner" id="bootSpin"></div>
+  <div id="bootTxt">Anmeldung läuft …</div>
+  <div class="fehler" id="bootFehler" hidden></div>
+  <button class="btn" id="bootBtn" hidden>Mit Microsoft anmelden</button>
+</div>
+
+<!-- ══ Kein Zugriff ════════════════════════════════════════════════ -->
+<div id="keinZugriff" hidden>
+  <header class="top">
+    <div class="inner">
+      <img src="assets/dihag-logo.png" alt="DIHAG Foundry Group">
+      <div><div class="titel">Umfragen</div><div class="sub">Auswertung</div></div>
+    </div>
+  </header>
+  <main>
+    <div class="karte" style="text-align:center">
+      <div style="font-size:48px">🔒</div>
+      <h2>Kein Zugriff auf die Auswertung</h2>
+      <p id="kzText"></p>
+      <p class="leer" id="kzGrund"></p>
+      <p style="margin-top:18px">
+        <button class="btn sec" id="kzAbmelden">Abmelden</button>
+      </p>
+    </div>
+  </main>
+</div>
+
+<!-- ══ Anwendung ═══════════════════════════════════════════════════ -->
+<div id="app" hidden>
+
+  <header class="top">
+    <div class="inner">
+      <img src="assets/dihag-logo.png" alt="DIHAG Foundry Group">
+      <div><div class="titel">Umfragen</div><div class="sub">Auswertung &amp; Verwaltung</div></div>
+      <div class="rechts">
+        <div class="person">
+          <div id="pName"></div>
+          <span class="rolle" id="pRolle"></span>
+        </div>
+        <button id="abmelden">Abmelden</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="reiter">
+    <div class="inner" id="reiter">
+      <button data-ansicht="ergebnisse" aria-selected="true">Ergebnisse</button>
+      <button data-ansicht="vergleich"  aria-selected="false">Vergleich</button>
+      <button data-ansicht="freitexte"  aria-selected="false">Freitexte</button>
+      <button data-ansicht="kontakte"   aria-selected="false">Mitmacher</button>
+      <button data-ansicht="verwaltung" aria-selected="false" hidden>Verwaltung</button>
+      <button data-ansicht="hilfe"      aria-selected="false">Hilfe</button>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- Filter (gilt für Ergebnisse, Vergleich, Freitexte) -->
+    <div class="filter" id="filter">
+      <div class="feld">
+        <label for="fUmfrage">Umfrage</label>
+        <select id="fUmfrage"></select>
+      </div>
+      <div class="feld">
+        <label for="fStandort">Standort</label>
+        <select id="fStandort"><option value="">alle</option></select>
+      </div>
+      <div class="feld">
+        <label for="fBereich">Bereich</label>
+        <select id="fBereich"><option value="">alle</option></select>
+      </div>
+      <div class="feld" style="min-width:150px">
+        <label for="fVon">Antworten ab</label>
+        <input type="date" id="fVon">
+      </div>
+      <div class="schub">
+        <button class="btn sec" id="bAktualisieren">↻ Aktualisieren</button>
+        <button class="btn sec" id="bCsv">⬇ CSV</button>
+        <button class="btn sec" id="bDrucken">🖨 Drucken</button>
+      </div>
+    </div>
+
+    <div id="meldung"></div>
+
+    <div id="ansichtErgebnisse"></div>
+    <div id="ansichtVergleich" hidden></div>
+    <div id="ansichtFreitexte" hidden></div>
+    <div id="ansichtKontakte" hidden></div>
+    <div id="ansichtVerwaltung" hidden></div>
+
+    <div id="ansichtHilfe" hidden>
+      <div class="block">
+        <h3>Wie diese Umfrage funktioniert</h3>
+        <p><b>Teilnahme ist anonym.</b> Die Teilnahmeseite verlangt keine Anmeldung.
+           Die Antworten gehen an einen Power-Automate-Flow, der sie mit einem
+           technischen Konto in die SharePoint-Liste schreibt. In der Liste steht
+           deshalb bei jeder Antwort dasselbe Konto – nicht die Person, die
+           geantwortet hat. Weder diese Anwendung noch die IT kann eine Antwort
+           einer Person zuordnen.</p>
+        <p><b>Freiwillige Kontaktangaben</b> („Möchten Sie beim Weiterentwickeln
+           mitmachen?“) landen in einer <i>getrennten</i> Liste, ohne Bezug zum
+           Antwortsatz. Deshalb steht unter „Mitmacher“ nur die Kontaktangabe und
+           nicht, was diese Person geantwortet hat.</p>
+        <p><b>Wer hier hereinkommt</b>, steht in der Liste
+           <code id="hPermList"></code> auf <code id="hPermSite"></code>
+           – Spalte <code>App</code> = <code id="hAppKey"></code>,
+           Spalte <code>Role</code> = <code>viewer</code>, <code>editor</code>
+           oder <code>admin</code>. Ohne Eintrag: kein Zugriff.</p>
+        <p><b>Teilnahme-Link</b> für Aushang, E-Mail und QR-Code:
+           <code id="hLink"></code></p>
+        <p class="leer">Technische Einzelheiten: README.md und
+           flow/ANLEITUNG-FLOW.md im Repository <code>dfedorov12/umfrage1</code>.</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="js/config.js?v=1"></script>
+<script src="js/auth.js?v=1"></script>
+<script src="js/graph.js?v=1"></script>
+<script src="js/rechte.js?v=1"></script>
+<script src="js/daten.js?v=1"></script>
+<script src="js/fragebogen.js?v=1"></script>
+<script src="js/analyse.js?v=1"></script>
+<script src="js/verwaltung.js?v=1"></script>
+<script src="js/auswertung.js?v=1"></script>
+</body>
+</html>
