@@ -295,10 +295,28 @@
       box.innerHTML = `<div class="block"><p class="leer">Die Liste „${esc(C.lists.kontakte)}“ existiert noch nicht.</p></div>`;
       return;
     }
+    // Aufbewahrung: Wie alt ist der älteste Eintrag, und was ist überfällig?
+    const tage = d => Math.floor((Date.now() - new Date(d).getTime()) / 86400e3);
+    const frist = C.kontakteAufbewahrungTage || 0;
+    const mitDatum = rows.filter(r => r.eingereicht);
+    const aeltester = mitDatum.length ? Math.max(...mitDatum.map(r => tage(r.eingereicht))) : 0;
+    const ueberfaellig = frist ? mitDatum.filter(r => tage(r.eingereicht) > frist) : [];
+
     box.innerHTML = `<div class="block">
       <h3>Freiwillige Kontaktangaben (${rows.length})</h3>
       <div class="frageinfo">Diese Angaben stehen in einer eigenen Liste und lassen sich
-        den Antworten <b>nicht</b> zuordnen – die Umfrage bleibt anonym.</div>
+        den Antworten <b>nicht</b> zuordnen – die Umfrage bleibt anonym.
+        ${frist ? `Vorgesehene Aufbewahrung: <b>${frist} Tage</b>` : "Keine Aufbewahrungsfrist hinterlegt"}${
+        rows.length ? `, ältester Eintrag ist <b>${aeltester} Tage</b> alt.` : "."}</div>
+      ${ueberfaellig.length ? `<div class="meldung info">
+        <b>${ueberfaellig.length} Eintrag/Einträge sind älter als ${frist} Tage.</b>
+        Hier stehen Namen und E-Mail-Adressen – anders als bei den Antworten sind das
+        personenbezogene Daten. Nach der Redaktionsrunde gehören sie gelöscht.
+        ${RECHTE.darfLoeschen()
+          ? `<p style="margin:10px 0 0"><button class="btn sec mini keinDruck" id="bAlteKontakte">`
+            + `${ueberfaellig.length} überfällige Einträge löschen</button></p>`
+          : `<p class="leer" style="margin:8px 0 0">Zum Löschen wird die Rolle „admin" benötigt.</p>`}
+      </div>` : ""}
       ${rows.length ? `<div class="wrap-x"><table class="tab">
         <thead><tr><th>Kontakt</th><th>Eingegangen</th>${RECHTE.darfLoeschen() ? `<th class="keinDruck"></th>` : ""}</tr></thead>
         <tbody>${rows.map(r => `<tr><td>${esc(r.kontakt)}</td>
@@ -310,6 +328,23 @@
       <p style="margin-top:14px"><button class="btn sec keinDruck" id="bKontakteCsv">⬇ Als CSV</button></p>`
       : `<p class="leer">Bisher hat sich niemand gemeldet.</p>`}
     </div>`;
+    $("bAlteKontakte")?.addEventListener("click", async () => {
+      if (!confirm(`${ueberfaellig.length} Eintrag/Einträge löschen, die älter als `
+        + `${frist} Tage sind? Das lässt sich nicht rückgängig machen.`)) return;
+      let weg = 0;
+      for (const r of ueberfaellig) {
+        try { await DATEN.loescheKontakt(r.itemId); weg++; } catch { /* weiter */ }
+      }
+      await zeichneKontakte();
+      // Nach dem Aufräumen ist der Warnkasten verschwunden – die Rückmeldung
+      // deshalb oben im Block einhängen, sonst bleibt der Erfolg unsichtbar.
+      const block = box.querySelector(".block");
+      if (block) {
+        block.insertAdjacentHTML("beforeend",
+          `<div class="meldung ok">${weg} überfällige Eintrag/Einträge gelöscht.</div>`);
+      }
+    });
+
     box.querySelectorAll("[data-kontaktweg]").forEach(b => b.addEventListener("click", async () => {
       if (!confirm("Diesen Eintrag endgültig löschen?")) return;
       try {

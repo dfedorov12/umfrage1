@@ -104,6 +104,7 @@ Wer sich meldet, gibt damit nicht preis, was er geantwortet hat.
 ```
 index.html            Teilnahme – ohne Anmeldung, mobil zuerst
 auswertung.html       Auswertung + Verwaltung – mit Anmeldung
+aushang.html          druckfertiges A4-Blatt mit QR-Code (ohne Anmeldung)
 js/config.js          IDs, Adressen, Listennamen, Endpunkt      ← einzige Stellschraube
 js/fragebogen.js      Renderer für die Fragetypen (auch Vorschau)
 js/api.js             Weg zum Flow (Probelauf, wenn kein Endpunkt gesetzt)
@@ -113,6 +114,8 @@ js/graph.js           Graph-/SharePoint-Helfer inkl. Spaltennamen-Toleranz
 js/rechte.js          Rolle aus AppPermissions
 js/daten.js           Lesen/Schreiben der drei Listen
 js/analyse.js         Rechnen und Zeichnen der Ergebnisse, CSV
+js/qr.js              QR-Erzeuger (eigener Code, kein CDN, kein fremder Dienst)
+js/aushang.js         Aufbau des Aushangs
 js/auswertung.js      Oberfläche der Auswertung
 js/verwaltung.js      Umfragen anlegen, bearbeiten, freischalten
 umfragen/*.json       mitgelieferte Fragebogen-Vorlagen
@@ -121,6 +124,9 @@ LISTEN-ANLEGEN.md       Spalten und Berechtigungen der SharePoint-Listen
 setup-umfragen-app.ps1  Redirect-URIs + Graph-Berechtigungen + Auswerter
 provision-umfragen-listen.ps1  Listen + Rechte
 tests/test-analyse.mjs  Rechenkerne ohne Browser prüfen
+tests/test-ascii.mjs    Nutzlast bleibt ASCII (Umlaut-Schutz)
+tests/test-qr.mjs       QR-Symbole gegen geprüfte Sollwerte
+tests/qr-lesetest.py    QR-Symbole mit einem echten Decoder lesen (OpenCV)
 ```
 
 ## Aufbau einer Fragebogen-Definition
@@ -168,6 +174,32 @@ Lokal ausprobieren: `python -m http.server 8772 --directory umfrage1`
 `_test.html` ist eine Testkulisse mit Attrappen für Anmeldung und SharePoint
 (`?rolle=viewer|editor|admin`, `?leer`, `?ohnelisten`) – sie steht bewusst nicht
 im Repository.
+
+## Aushang fürs Schwarze Brett
+
+`aushang.html?u=<umfrage-id>` erzeugt ein druckfertiges A4-Blatt: DIHAG-Kopf,
+Überschrift aus der Umfrage, großer QR-Code auf den Teilnahme-Link, Adresse zum
+Abtippen und wahlweise eine Frist (`&bis=JJJJ-MM-TT`). Erreichbar über den Knopf
+**Aushang** in der Verwaltung, ohne Anmeldung nutzbar.
+
+Der QR-Code entsteht in `js/qr.js` – eigener Code, weil ein Online-Generator die
+Adresse an einen Fremdanbieter schicken würde und im Werk womöglich gesperrt ist.
+Umfang: Byte-Modus, Fehlerkorrektur L/M, Versionen 1–10 (bis rund 200 Zeichen).
+Fehlerkorrektur **M**, damit der Code Fingerabdrücke und Reißzwecken verkraftet.
+
+Geprüft wurde er zweistufig: erst Modul für Modul gegen die Bibliothek „segno"
+(dabei kam ein Fehler heraus, der jeden Code unlesbar machte – die
+Formatinformation stand spiegelverkehrt), danach mit einem echten Decoder
+(`tests/qr-lesetest.py`, OpenCV): neun von neun Symbolen korrekt gelesen.
+`tests/test-qr.mjs` hält dieses geprüfte Ergebnis fest.
+
+## Aufbewahrung der Kontaktangaben
+
+Die Antworten sind anonym und dürfen bleiben. `Umfrage_Kontakte` enthält dagegen
+Namen und E-Mail-Adressen. `js/config.js` legt mit `kontakteAufbewahrungTage`
+(Vorgabe 180) fest, ab wann die Auswertung überfällige Einträge meldet und zum
+Löschen anbietet – im Reiter **Mitmacher**, Rolle `admin`. „Wir denken dran" ist
+keine Löschfrist.
 
 ## Grenzen
 

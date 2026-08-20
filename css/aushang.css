@@ -1,0 +1,101 @@
+/* ══════════════════════════════════════════════════════════════════
+   Aushang für das Schwarze Brett – A4, zum Ausdrucken
+
+   Auslegung fürs Werk: Der Zettel hängt an einer Wand, gelesen wird er im
+   Vorbeigehen aus zwei, drei Metern. Deshalb wenig Text, sehr große Schrift
+   und ein QR-Code, der auch mit älterem Handy und schlechtem Hallenlicht
+   noch erfasst wird.
+   ══════════════════════════════════════════════════════════════════ */
+
+body.aushang { background: #e9edf3; }
+
+/* ── Bedienleiste (nur am Bildschirm) ─────────────────────────────── */
+
+.leiste { background: #fff; border-bottom: 1px solid var(--border); padding: 14px 0 10px; }
+.leiste .inner {
+  max-width: 940px; margin: 0 auto; padding: 0 18px;
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
+}
+.leiste .feld { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 210px; }
+.leiste .feld.schmal { flex: 0 0 150px; min-width: 150px; }
+.leiste label {
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.leiste input, .leiste select { margin: 0; padding: 9px 11px; font-size: 15px; }
+.leiste .schub { display: flex; gap: 8px; }
+.leiste .btn { min-height: 42px; padding: 9px 16px; font-size: 15px; }
+.leiste .hinweis { color: var(--muted); font-size: 13px; margin: 10px auto 0; }
+
+/* ── Das Blatt ────────────────────────────────────────────────────── */
+
+.blatt {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 22px auto;
+  padding: 18mm 16mm 14mm;
+  background: #fff;
+  box-shadow: 0 6px 30px rgba(26, 38, 68, .18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.blatt .kopf {
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: 8mm; border-bottom: 3px solid var(--orange);
+}
+.blatt .kopf img { height: 16mm; }
+.blatt .kopf .marke {
+  font-size: 12pt; letter-spacing: .16em; text-transform: uppercase; color: var(--navy);
+}
+
+.blatt h1 {
+  font-size: 34pt; line-height: 1.1; color: var(--navy);
+  margin: 12mm 0 4mm; max-width: 170mm;
+}
+.blatt .zusatz { font-size: 16pt; color: var(--anthrazit); margin: 0 0 8mm; }
+
+.blatt .qr { margin: 0 0 6mm; }
+.blatt .qr svg { display: block; }
+
+.blatt .anleitung { font-size: 13pt; margin: 0 0 3mm; color: var(--anthrazit); }
+.blatt .adresse {
+  font-size: 15pt; font-weight: 600; color: var(--azur);
+  word-break: break-all; margin: 0 0 6mm;
+}
+
+.blatt .frist {
+  font-size: 15pt; font-weight: 600; color: #fff; background: var(--orange);
+  padding: 3mm 8mm; border-radius: 6mm; margin: 0 0 6mm;
+}
+
+.blatt .fuss {
+  margin-top: auto; width: 100%;
+  display: flex; justify-content: space-between; gap: 10mm;
+  border-top: 1px solid var(--border); padding-top: 5mm;
+  font-size: 11pt; color: var(--muted); text-align: left;
+}
+
+/* ── Druck ────────────────────────────────────────────────────────── */
+
+@page { size: A4 portrait; margin: 0; }
+
+@media print {
+  body.aushang { background: #fff; }
+  .leiste, .keinDruck { display: none !important; }
+  .blatt {
+    width: auto; min-height: auto; margin: 0;
+    padding: 14mm 14mm 10mm;
+    box-shadow: none;
+  }
+  /* Farbflächen (Orange-Balken, Fristband) auch wirklich drucken */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+@media (max-width: 820px) {
+  .blatt { width: auto; min-height: auto; padding: 20px; }
+  .blatt h1 { font-size: 26pt; }
+}

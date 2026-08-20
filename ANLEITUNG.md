@@ -28,9 +28,11 @@ Der Link funktioniert **ohne Anmeldung**, auf jedem Handy, auch von zu Hause.
 Bewährte Wege in die Werke:
 
 * **E-Mail** an alle mit Postfach – Link als großen Knopf, nicht als nackte Adresse.
-* **Aushang am Schwarzen Brett** mit QR-Code. Einen QR-Code erzeugt man z. B. in
-  Microsoft Edge (Adresszeile → Rechtsklick → *QR-Code für diese Seite erstellen*)
-  oder in Word (*Einfügen → Add-Ins*).
+* **Aushang am Schwarzen Brett** – dafür gibt es einen fertigen Ausdruck:
+  In der Verwaltung auf **Aushang** klicken. Das öffnet ein A4-Blatt mit großem
+  QR-Code, Überschrift und Adresse; Überschrift, Zusatzzeile, Frist und
+  QR-Größe lassen sich oben anpassen, dann **Drucken**.
+  Bitte vor dem Aushängen einmal mit dem eigenen Handy scannen.
 * **Monitore im Werk**, falls vorhanden.
 * **Über die Meister/Schichtführer** – erfahrungsgemäß der wirksamste Weg in der
   Produktion.
@@ -100,7 +102,11 @@ niemand muss dafür in SharePoint:
   Fehlklick hier die ganze Befragung vernichten würde, muss man zur Bestätigung
   das Wort `LOESCHEN` eintippen; ein schnelles „OK" genügt nicht.
 
-Ebenso im Reiter **Mitmacher** für die freiwilligen Kontaktangaben.
+Ebenso im Reiter **Mitmacher** für die freiwilligen Kontaktangaben. Dort steht
+außerdem, wie alt der älteste Eintrag ist: Nach 180 Tagen meldet die Anwendung
+überfällige Kontaktangaben und bietet an, sie zu löschen. Das ist die einzige
+Stelle im System mit Namen und E-Mail-Adressen – nach der Redaktionsrunde
+gehören sie weg.
 
 Beides erfordert die Rolle `admin` und ist **endgültig**: SharePoint legt hier
 keine Fassung ab, die man zurückholen könnte. Die Anonymität bleibt dabei

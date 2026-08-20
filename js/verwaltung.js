@@ -93,6 +93,9 @@ const VERWALTUNG = (() => {
           <button class="btn sec mini" data-link="${esc(u.id)}">Link</button>
           <a class="btn sec mini" href="${esc(teilnahmeLink(u.id))}&vorschau" target="_blank"
              style="text-decoration:none;display:inline-block">Vorschau</a>
+          <a class="btn sec mini" href="aushang.html?u=${encodeURIComponent(u.id)}" target="_blank"
+             style="text-decoration:none;display:inline-block"
+             title="Druckfertiges A4-Blatt mit QR-Code fuer das Schwarze Brett">Aushang</a>
         </td>
       </tr>`;
     }).join("");

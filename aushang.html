@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aushang · DIHAG Umfragen</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/dihag-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Exo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=11">
+<link rel="stylesheet" href="css/aushang.css?v=11">
+</head>
+<body class="aushang">
+
+<!-- Bedienleiste – erscheint nicht im Ausdruck -->
+<div class="leiste keinDruck">
+  <div class="inner">
+    <div class="feld">
+      <label for="fUeberschrift">Überschrift</label>
+      <input type="text" id="fUeberschrift" placeholder="wird aus der Umfrage übernommen">
+    </div>
+    <div class="feld">
+      <label for="fZusatz">Zeile darunter</label>
+      <input type="text" id="fZusatz">
+    </div>
+    <div class="feld schmal">
+      <label for="fFrist">Teilnahme bis</label>
+      <input type="date" id="fFrist">
+    </div>
+    <div class="feld schmal">
+      <label for="fGroesse">QR-Größe</label>
+      <select id="fGroesse">
+        <option value="90">90 mm</option>
+        <option value="110" selected>110 mm</option>
+        <option value="130">130 mm</option>
+      </select>
+    </div>
+    <div class="schub">
+      <button class="btn" id="bDrucken">🖨 Drucken</button>
+      <button class="btn sec" id="bSvg">⬇ QR als SVG</button>
+    </div>
+  </div>
+  <p class="hinweis inner">
+    Auf A4 gedacht, quer wie hoch lesbar. Vor dem Aushängen bitte einmal mit dem
+    eigenen Handy scannen – dann wissen Sie sicher, dass der Code stimmt.
+  </p>
+</div>
+
+<!-- Das Blatt -->
+<main class="blatt" id="blatt">
+  <header class="kopf">
+    <img src="assets/dihag-logo.png" alt="DIHAG Foundry Group">
+    <div class="marke">DIHAG Foundry Group</div>
+  </header>
+
+  <h1 id="ueberschrift">Ihre Meinung zählt</h1>
+  <p class="zusatz" id="zusatz">Anonyme Umfrage – 5 Minuten, ohne Anmeldung</p>
+
+  <div class="qr" id="qr"></div>
+
+  <p class="anleitung">
+    <b>Handy-Kamera auf den Code halten</b> – oder im Browser eingeben:
+  </p>
+  <p class="adresse" id="adresse"></p>
+
+  <p class="frist" id="frist" hidden></p>
+
+  <footer class="fuss">
+    <span><b>Anonym.</b> Keine Anmeldung, kein Name, keine Personalnummer.</span>
+    <span>Ihr Kommunikationsteam</span>
+  </footer>
+</main>
+
+<script src="js/config.js?v=11"></script>
+<script src="js/api.js?v=11"></script>
+<script src="js/qr.js?v=11"></script>
+<script src="js/aushang.js?v=11"></script>
+</body>
+</html>

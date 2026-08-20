@@ -93,6 +93,15 @@ const UMFRAGE_CONFIG = {
   // Der Flow verwirft solche Einsendungen (siehe ANLEITUNG-FLOW.md).
   mindestDauerSek: 10,
 
+  /* ── Aufbewahrung der Kontaktangaben ──────────────────────────────
+     Die Antworten sind anonym und dürfen bleiben. Die freiwilligen
+     Kontaktangaben sind es NICHT – dort stehen Namen und E-Mail-Adressen.
+     Sie werden für die Redaktionsrunde gebraucht und danach nicht mehr;
+     „wir denken dran" ist keine Löschfrist. Nach dieser Zahl von Tagen
+     meldet die Auswertung überfällige Einträge und bietet das Löschen an.
+     0 schaltet die Erinnerung ab.                                        */
+  kontakteAufbewahrungTage: 180,
+
   // Höchstzahl Fragen je Bildschirm. Lange Abschnitte werden automatisch
   // auf mehrere Schritte verteilt (0 = nie teilen). Eine einzelne Umfrage
   // kann das mit "proSchritt" in ihrer Definition überschreiben.
