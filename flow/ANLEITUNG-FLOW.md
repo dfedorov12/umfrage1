@@ -136,8 +136,25 @@ first(body('Elemente_abrufen')?['value'])
 und **Verfassen** `Status` mit
 
 ```
-coalesce(outputs('Umfrage')?['Status'], 'Fehlt')
+coalesce(outputs('Umfrage')?['Status']?['Value'], 'Fehlt')
 ```
+
+> ### Warum `?['Value']`?
+> `Status` ist eine **Auswahlspalte**. Der SharePoint-Connector liefert dafür
+> kein Wort, sondern ein Objekt:
+>
+> ```json
+> {"@odata.type":"#…SPListExpandedReference","Id":1,"Value":"Aktiv"}
+> ```
+>
+> Ohne `?['Value']` vergleicht man also ein Objekt mit dem Text `Aktiv` – das
+> trifft nie zu, und die Umfrage bleibt „nicht freigeschaltet", obwohl sie in
+> SharePoint sichtbar auf *Aktiv* steht. Das ist die unangenehmste Sorte
+> Fehler: Es sieht überall richtig aus und funktioniert trotzdem nicht.
+>
+> Wurde `Status` stattdessen als **einzelne Textzeile** angelegt, lautet der
+> Ausdruck `coalesce(outputs('Umfrage')?['Status'], 'Fehlt')`. Fehlt die Zeile
+> in der Liste ganz, liefern beide Fassungen `Fehlt`.
 
 ---
 
@@ -379,6 +396,7 @@ Erwartet: `{"ok":true}` und ein neues Element in `Umfrage_Antworten`.
 | Speichern scheitert: `… 'String' is not convertible to type/format 'Number/double'` | Ein Zahlen- oder Datumsfeld hat Text bekommen (`@{…}`, oder ein Tabulator vor dem Ausdruck) | Feld leeren, **fx**, Ausdruck ohne `@{}` – siehe Kasten in Schritt 4 |
 | Aktion zeigt **„Ungültige Parameter"** | Der Rumpf der Antwort ist kein gültiges JSON – meist `"umfrage": @{…}` ohne Anführungszeichen | Ausdruck in Anführungszeichen setzen (Schritt 4) oder das ganze Body-Feld als **fx**-Ausdruck schreiben |
 | Flow läuft, aber der Schalter greift nie | Im Fall steht ein falscher Wert bei **„Ist gleich"** (z. B. `antwort1` statt `antwort`) | Fall anklicken, Wert prüfen – der Name des Kästchens ist egal |
+| Umfrage steht in SharePoint auf **Aktiv**, die Seite sagt trotzdem „nicht freigegeben" | `Status` ist eine Auswahlspalte und liefert ein Objekt statt eines Wortes | im Verfassen `Status` ein `?['Value']` ergänzen (Schritt 3) |
 | Ausdruck bleibt leer, kein Fehler | Aktionsname stimmt nicht (`Verfassen` statt `Nutzlast`) oder Leerzeichen nicht als `_` geschrieben | Aktion umbenennen bzw. `outputs('Elemente_abrufen')`-Schreibweise prüfen |
 | „Element abrufen" verlangt eine ID | falsche Aktion erwischt | „**Elemente** abrufen" (*Get items*) mit Filterabfrage nehmen |
 | Browser meldet „CORS-Fehler" / „Failed to fetch" | Antwort ohne `Access-Control-Allow-Origin` | Kopfzeile in **allen** Antwort-Aktionen ergänzen |
