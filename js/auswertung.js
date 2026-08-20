@@ -126,20 +126,30 @@
 
   async function antwortenLaden() {
     if (!S.aktuell) return zeichne();
-    let rows = null;
+    let ergebnis = null;
     try {
-      rows = await DATEN.antworten(S.aktuell.id);
+      ergebnis = await DATEN.antworten(S.aktuell.id);
     } catch (e) {
       meldung("err", `Antworten nicht lesbar: ${e.detail || e.message}`);
-      rows = [];
     }
-    if (rows === null) {
+    if (ergebnis === null) {
       meldung("info", `Die Liste „${C.lists.antworten}“ existiert noch nicht – es liegen `
         + "also noch keine Antworten vor."
         + (RECHTE.darfVerwalten() ? " Unter „Verwaltung“ können Sie die Listen anlegen." : ""));
-      rows = [];
+      ergebnis = { zeilen: [], gesamt: 0, kennungen: [] };
     }
-    S.alleAntworten = rows;
+
+    // Der Klassiker: Die Liste ist voll, aber keine Zeile trägt die Kennung der
+    // gewählten Umfrage – dann schreibt der Flow die Spalte UmfrageId nicht.
+    // Ohne diesen Hinweis sieht es aus, als wäre nie eine Antwort angekommen.
+    if (!ergebnis.zeilen.length && ergebnis.gesamt) {
+      const gefunden = ergebnis.kennungen.map(k => k || "(leer)").join(", ");
+      meldung("info", `In „${C.lists.antworten}“ stehen ${ergebnis.gesamt} Antworten, `
+        + `aber keine davon trägt die Kennung „${S.aktuell.id}“. Gefunden wurde: ${gefunden}. `
+        + "Wenn dort „(leer)“ steht, füllt der Flow die Spalte UmfrageId nicht – "
+        + "in der Aktion „Element erstellen“ nachtragen.");
+    }
+    S.alleAntworten = ergebnis.zeilen;
     filterFuellen();
     filtern();
   }

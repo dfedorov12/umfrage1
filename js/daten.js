@@ -31,6 +31,10 @@ const DATEN = (() => {
 
   const jsonOderNull = s => { try { return JSON.parse(s); } catch { return null; } };
 
+  /** Kennungen tolerant vergleichen (Leerzeichen, Groß-/Kleinschreibung). */
+  const gleich = (a, b) => String(a || "").trim().toLowerCase()
+                        === String(b || "").trim().toLowerCase();
+
   /* ── Umfragen ──────────────────────────────────────────────────── */
 
   /** Alle Umfragen. `null`, wenn die Liste noch nicht existiert. */
@@ -75,22 +79,37 @@ const DATEN = (() => {
    *  verlangt in SharePoint einen Index, sonst scheitert die Abfrage bei
    *  über 5.000 Elementen – und zwar unzuverlässig, was die Auswertung
    *  gelegentlich leer aussehen ließe. */
+  /** @returns {Promise<{zeilen:Array, gesamt:number, kennungen:string[]}|null>}
+   *  `gesamt` und `kennungen` beziehen sich auf die ganze Liste. Damit kann die
+   *  Auswertung den häufigsten Einrichtungsfehler benennen, statt nur „keine
+   *  Antworten" zu zeigen: Der Flow schreibt Antworten, füllt aber die Spalte
+   *  UmfrageId nicht – dann passt keine Zeile zur gewählten Umfrage, obwohl die
+   *  Liste voll ist. */
   async function antworten(umfrageId) {
     const rows = await GRAPH.listItems(C.site, L.antworten, F_ANTWORTEN);
     if (!rows) return null;
-    return rows
-      .filter(r => !umfrageId || r.UmfrageId === umfrageId)
-      .map(r => ({
-        itemId:     r.id,
-        umfrage:    r.UmfrageId || "",
-        antworten:  jsonOderNull(r.AntwortJson) || {},
-        standort:   r.Standort || "",
-        bereich:    r.Bereich || "",
-        dauerSek:   Number(r.DauerSek || 0),
-        quelle:     r.Quelle || "",
-        eingereicht: r.Eingereicht || r.Created || ""
-      }))
-      .sort((a, b) => String(b.eingereicht).localeCompare(String(a.eingereicht)));
+    const alle = rows.map(r => ({
+      itemId:     r.id,
+      umfrage:    r.UmfrageId || "",
+      antworten:  jsonOderNull(r.AntwortJson) || {},
+      standort:   r.Standort || "",
+      bereich:    r.Bereich || "",
+      dauerSek:   Number(r.DauerSek || 0),
+      quelle:     r.Quelle || "",
+      eingereicht: r.Eingereicht || r.Created || ""
+    })).sort((a, b) => String(b.eingereicht).localeCompare(String(a.eingereicht)));
+
+    // Nachsichtig vergleichen: Ein Leerzeichen oder ein Großbuchstabe in der
+    // Kennung soll nicht dazu führen, dass Antworten unsichtbar bleiben.
+    const zeilen = umfrageId
+      ? alle.filter(r => gleich(r.umfrage, umfrageId))
+      : alle;
+
+    return {
+      zeilen,
+      gesamt: alle.length,
+      kennungen: [...new Set(alle.map(r => r.umfrage))]
+    };
   }
 
   const loescheAntwort = itemId => GRAPH.deleteItem(C.site, L.antworten, itemId);
@@ -101,7 +120,7 @@ const DATEN = (() => {
     const rows = await GRAPH.listItems(C.site, L.kontakte, F_KONTAKTE);
     if (!rows) return null;
     return rows
-      .filter(r => !umfrageId || r.UmfrageId === umfrageId)
+      .filter(r => !umfrageId || gleich(r.UmfrageId, umfrageId))
       .map(r => ({
         itemId: r.id,
         umfrage: r.UmfrageId || "",
