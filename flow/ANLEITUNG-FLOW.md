@@ -143,11 +143,21 @@ coalesce(outputs('Umfrage')?['Status'], 'Fehlt')
 
 ## 4. Verzweigen nach Aktion
 
-**Steuerung → Umschalten (Switch)** auf
+**Steuerung → Umschalten (Switch)**
 
-```
-outputs('Nutzlast')?['aktion']
-```
+* Feld **„Ein"** (englisch *On*), über **fx**:
+  ```
+  outputs('Nutzlast')?['aktion']
+  ```
+* **Fall 1** → Feld **„Ist gleich"**: `definition`
+* **Fall 2** → Feld **„Ist gleich"**: `antwort`
+* **Standard**: hat kein „Ist gleich" – er fängt alles Übrige ab.
+
+> Der **Name** des Falls oben im Kästchen ist egal – er darf „antwort1" oder
+> „Fall antwort" heißen. Entscheidend ist allein der Wert im Feld **„Ist gleich"**,
+> und der muss exakt `definition` bzw. `antwort` lauten: klein geschrieben, ohne
+> Anführungszeichen, ohne Leerzeichen. Genau diese Wörter schickt die
+> Teilnahmeseite im Feld `aktion`.
 
 So sieht der fertige Flow aus – zum Abgleichen, welche Aktion wohin gehört:
 
@@ -216,38 +226,71 @@ Bedingung: `outputs('Status')` **ist gleich** `Aktiv`
 
 ### Fall `antwort`
 
-**1. Bedingung „darf gespeichert werden"** – alle drei Punkte müssen zutreffen:
+**1. Bedingung „darf gespeichert werden"**
 
-| Prüfung | Ausdruck | Sinn |
+Statt drei einzelner Zeilen genügt **eine** Zeile mit einem Ausdruck – weniger
+Klickerei und weniger Gelegenheit für Tippfehler:
+
+* linkes Feld (über **fx**):
+  ```
+  and(equals(outputs('Status'), 'Aktiv'), empty(coalesce(outputs('Nutzlast')?['meta']?['hp'], '')), greaterOrEquals(int(coalesce(outputs('Nutzlast')?['meta']?['dauerSek'], 0)), 10))
+  ```
+* Operator: **ist gleich**
+* rechtes Feld: `true` (einfach tippen)
+
+Was der Ausdruck prüft:
+
+| Teil | Sinn |
+|---|---|
+| `equals(outputs('Status'), 'Aktiv')` | keine Antworten auf Entwürfe oder beendete Umfragen |
+| `empty(… ['hp'] …)` | Honigtopf – ein unsichtbares Feld, das nur Automaten ausfüllen |
+| `greaterOrEquals(… ['dauerSek'] …, 10)` | fünfzehn Fragen in unter zehn Sekunden füllt kein Mensch aus |
+
+**2. Bei „Wahr": SharePoint → „Element erstellen"** in `Umfrage_Antworten`
+
+| Spalte | Wert | wie eintragen |
 |---|---|---|
-| Umfrage aktiv | `outputs('Status')` ist gleich `Aktiv` | keine Antworten auf Entwürfe oder beendete Umfragen |
-| Honigtopf leer | `empty(coalesce(outputs('Nutzlast')?['meta']?['hp'], ''))` ist gleich `true` | ein unsichtbares Feld, das nur Automaten ausfüllen |
-| lange genug gebraucht | `greaterOrEquals(int(coalesce(outputs('Nutzlast')?['meta']?['dauerSek'], 0)), 10)` ist gleich `true` | fünfzehn Fragen in unter zehn Sekunden füllt kein Mensch aus |
+| Title | `@{outputs('Nutzlast')?['umfrage']}` | Textfeld |
+| UmfrageId | `@{outputs('Nutzlast')?['umfrage']}` | Textfeld |
+| AntwortJson | `@{string(outputs('Nutzlast')?['antworten'])}` | Textfeld |
+| Standort | `@{coalesce(outputs('Nutzlast')?['standort'], '')}` | Textfeld |
+| Bereich | `@{coalesce(outputs('Nutzlast')?['bereich'], '')}` | Textfeld |
+| Quelle | `Web` | fester Text |
+| Eingereicht | `utcNow()` | **nur über fx** |
+| DauerSek | `int(coalesce(outputs('Nutzlast')?['meta']?['dauerSek'], 0))` | **nur über fx** |
 
-**2. Bei „Ja": SharePoint → „Element erstellen"** in `Umfrage_Antworten`
+> ### Zahlen- und Datumsfelder: nur über fx, ohne `@{}`
+> Sonst scheitert das **Speichern** des Flows mit
+> `OpenApiOperationParameterValidationFailed … 'String' is not convertible to
+> type/format 'Number/double'`.
+>
+> Der Grund: `@{…}` bedeutet „setze das Ergebnis in einen **Text** ein". Für die
+> Spalte `DauerSek` (Zahl) und `Eingereicht` (Datum) muss aber der reine Wert
+> ankommen. Deshalb das Feld **leeren**, auf **fx** klicken und den Ausdruck
+> *ohne* geschweifte Klammern eingeben.
+>
+> Und: **kein Leerzeichen und kein Tabulator davor.** Steht auch nur ein
+> Tabulator vor dem Ausdruck, wird daraus wieder Text – die Fehlermeldung zeigt
+> das als `'"\t@coalesce(…)"'`. Das passiert leicht beim Kopieren aus einer
+> Tabelle. Im Zweifel Feld leeren, `fx` klicken, Ausdruck tippen.
 
-| Spalte | Wert |
-|---|---|
-| Title | `@{outputs('Nutzlast')?['umfrage']}` |
-| UmfrageId | `@{outputs('Nutzlast')?['umfrage']}` |
-| AntwortJson | `@{string(outputs('Nutzlast')?['antworten'])}` |
-| Standort | `@{coalesce(outputs('Nutzlast')?['standort'], '')}` |
-| Bereich | `@{coalesce(outputs('Nutzlast')?['bereich'], '')}` |
-| Eingereicht | `@{utcNow()}` |
-| DauerSek | `@{coalesce(outputs('Nutzlast')?['meta']?['dauerSek'], 0)}` |
-| Quelle | `Web` |
+**3. Bedingung „Kontakt vorhanden"**
 
-**3. Bedingung „Kontakt vorhanden"**:
-`empty(trim(coalesce(outputs('Nutzlast')?['kontakt'], '')))` ist gleich `false`
+* linkes Feld (über **fx**):
+  ```
+  empty(trim(coalesce(outputs('Nutzlast')?['kontakt'], '')))
+  ```
+* Operator: **ist gleich**
+* rechtes Feld: `false` (tippen)
 
-Bei „Ja": **SharePoint → „Element erstellen"** in `Umfrage_Kontakte`
+Bei „Wahr": **SharePoint → „Element erstellen"** in `Umfrage_Kontakte`
 
-| Spalte | Wert |
-|---|---|
-| Title | `@{outputs('Nutzlast')?['umfrage']}` |
-| UmfrageId | `@{outputs('Nutzlast')?['umfrage']}` |
-| Kontakt | `@{outputs('Nutzlast')?['kontakt']}` |
-| Eingereicht | `@{utcNow()}` |
+| Spalte | Wert | wie eintragen |
+|---|---|---|
+| Title | `@{outputs('Nutzlast')?['umfrage']}` | Textfeld |
+| UmfrageId | `@{outputs('Nutzlast')?['umfrage']}` | Textfeld |
+| Kontakt | `@{outputs('Nutzlast')?['kontakt']}` | Textfeld |
+| Eingereicht | `utcNow()` | **nur über fx** |
 
 > **Wichtig für die Anonymität:** Es darf **kein** Feld geben, das den Kontakt mit
 > dem Antwortsatz verbindet – keine gemeinsame Vorgangsnummer, kein Zeitstempel auf
@@ -333,7 +376,9 @@ Erwartet: `{"ok":true}` und ein neues Element in `Umfrage_Antworten`.
 
 | Symptom | Ursache | Abhilfe |
 |---|---|---|
+| Speichern scheitert: `… 'String' is not convertible to type/format 'Number/double'` | Ein Zahlen- oder Datumsfeld hat Text bekommen (`@{…}`, oder ein Tabulator vor dem Ausdruck) | Feld leeren, **fx**, Ausdruck ohne `@{}` – siehe Kasten in Schritt 4 |
 | Aktion zeigt **„Ungültige Parameter"** | Der Rumpf der Antwort ist kein gültiges JSON – meist `"umfrage": @{…}` ohne Anführungszeichen | Ausdruck in Anführungszeichen setzen (Schritt 4) oder das ganze Body-Feld als **fx**-Ausdruck schreiben |
+| Flow läuft, aber der Schalter greift nie | Im Fall steht ein falscher Wert bei **„Ist gleich"** (z. B. `antwort1` statt `antwort`) | Fall anklicken, Wert prüfen – der Name des Kästchens ist egal |
 | Ausdruck bleibt leer, kein Fehler | Aktionsname stimmt nicht (`Verfassen` statt `Nutzlast`) oder Leerzeichen nicht als `_` geschrieben | Aktion umbenennen bzw. `outputs('Elemente_abrufen')`-Schreibweise prüfen |
 | „Element abrufen" verlangt eine ID | falsche Aktion erwischt | „**Elemente** abrufen" (*Get items*) mit Filterabfrage nehmen |
 | Browser meldet „CORS-Fehler" / „Failed to fetch" | Antwort ohne `Access-Control-Allow-Origin` | Kopfzeile in **allen** Antwort-Aktionen ergänzen |
