@@ -71,7 +71,7 @@ const UMFRAGE_CONFIG = {
      Der Fragebogen funktioniert vollständig, die Antworten werden aber
      NICHT gespeichert, sondern nur angezeigt. So lässt sich alles testen,
      bevor der Flow steht.                                                */
-  endpunkt: "",
+  endpunkt: "https://defaultfdb70646023a403ba4b91f474a9351.23.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/30/workflows/f4d32fedc5c644b1a9ee0469e321382f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=MdTVNfVyDy_dOe16D90s0ab1rhLPlVeCRvMQhGbV54E",
 
   /* ── Fragebögen ───────────────────────────────────────────────────
      Welche Umfrage die Teilnahmeseite ohne Parameter zeigt. Über
