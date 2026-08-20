@@ -22,13 +22,30 @@ const AUTH = (() => {
 
   /** Redirect-URI aus der aufgerufenen Adresse ableiten, damit dieselbe
    *  Auslieferung unter mehreren Hosts funktioniert (eigene Domäne
-   *  https://rundumdenjob.dihag.de/ und Fallback github.io/rundumdenjob/).
-   *  „index.html“ wird abgeschnitten und ein Schrägstrich am Ende erzwungen –
-   *  sonst passt die Adresse nicht mehr zur Registrierung in Entra und der
-   *  Login bricht mit AADSTS50011 ab. */
+   *  https://umfrage.dihag.de/ und Ausweichadresse github.io/umfrage1/).
+   *
+   *  ACHTUNG, hier steckte ein Fehler: Die Fassung aus „Rund um den Job“ hat
+   *  nur „index.html“ abgeschnitten und danach IMMER einen Schrägstrich
+   *  angehängt. Dort lief die Anmeldung nur auf der Startseite, hier läuft sie
+   *  auf `auswertung.html` – daraus wurde `…/auswertung.html/`, und genau diese
+   *  Adresse gibt es auf GitHub Pages nicht: Nach dem Anmelden landete man auf
+   *  einer 404-Seite, der Code wurde nie eingelöst.
+   *
+   *  Jetzt gilt: Endet der Pfad auf eine .html-Datei, ist die Seite selbst die
+   *  Rückkehradresse (nur „index.html“ wird auf das Verzeichnis gekürzt).
+   *  Jede so entstehende Adresse muss in Entra als Redirect-URI der
+   *  Single-Page-Anwendung stehen, sonst bricht der Login mit AADSTS50011 ab.
+   *
+   *    /auswertung.html  →  https://host/auswertung.html
+   *    /index.html       →  https://host/
+   *    /                 →  https://host/                                   */
   const RURI = (() => {
-    let p = location.pathname.replace(/index\.html?$/i, "");
-    if (!p.endsWith("/")) p += "/";
+    let p = location.pathname;
+    if (/\.html?$/i.test(p)) {
+      p = p.replace(/index\.html?$/i, "");
+    } else if (!p.endsWith("/")) {
+      p += "/";
+    }
     return location.origin + p;
   })();
 

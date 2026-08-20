@@ -67,11 +67,20 @@ Wer sich meldet, gibt damit nicht preis, was er geantwortet hat.
    ./setup-umfragen-app.ps1
    ```
 
-   Von Hand im Portal geht es genauso: *Authentifizierung → Single-Page-Anwendung* →
-   `https://umfrage.dihag.de/` **und** `https://dfedorov12.github.io/umfrage1/`.
-   Fehlt die Adresse, bricht die Anmeldung mit **AADSTS50011** ab.
-   `js/auth.js` leitet die Redirect-URI aus dem Aufruf ab und läuft deshalb
-   unter beiden Adressen.
+   Von Hand im Portal geht es genauso: *Authentifizierung → Single-Page-Anwendung*.
+   Eingetragen gehoeren **vier** Adressen – die Anmeldung laeuft auf
+   `auswertung.html`, nicht auf der Startseite:
+
+   ```
+   https://umfrage.dihag.de/
+   https://umfrage.dihag.de/auswertung.html
+   https://dfedorov12.github.io/umfrage1/
+   https://dfedorov12.github.io/umfrage1/auswertung.html
+   ```
+
+   `js/auth.js` nimmt die aufgerufene Seite selbst als Rueckkehradresse
+   (nur `index.html` wird auf das Verzeichnis gekuerzt). Fehlt eine Adresse,
+   bricht die Anmeldung mit **AADSTS50011** ab.
 5. **Umfrage anlegen** – *Verwaltung → „newsletter-2026 übernehmen"*, danach
    Status auf **Aktiv** setzen.
 6. **Auswerter freischalten** – als `administrator@dihag.com` anmelden und unter

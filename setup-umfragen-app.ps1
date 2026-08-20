@@ -25,9 +25,14 @@
 param(
     [string]   $ClientId  = "f7474539-80e1-4bbb-b1ed-5536068581cb",   # = js/config.js
     [string]   $TenantId  = "fdb70646-023a-403b-a4b9-1f474a935123",
+    # Die Anmeldung laeuft auf auswertung.html, nicht auf der Startseite –
+    # js/auth.js nimmt die aufgerufene Seite selbst als Rueckkehradresse.
+    # Deshalb muss BEIDES eingetragen sein, Wurzel und Auswertungsseite.
     [string[]] $RedirectUris = @(
-        "https://umfrage.dihag.de/",              # eigene Domäne, produktiv
-        "https://dfedorov12.github.io/umfrage1/"  # Ausweichadresse
+        "https://umfrage.dihag.de/",                             # eigene Domäne
+        "https://umfrage.dihag.de/auswertung.html",              # dto., Anmeldeseite
+        "https://dfedorov12.github.io/umfrage1/",                # Ausweichadresse
+        "https://dfedorov12.github.io/umfrage1/auswertung.html"  # dto., Anmeldeseite
     ),
     [string[]] $Scopes    = @("User.Read", "Sites.ReadWrite.All"),
     [string]   $PermPath  = "dihag.sharepoint.com:/sites/IT",   # = js/config.js permSite
