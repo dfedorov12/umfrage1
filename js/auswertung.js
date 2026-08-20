@@ -291,13 +291,26 @@
       <div class="frageinfo">Diese Angaben stehen in einer eigenen Liste und lassen sich
         den Antworten <b>nicht</b> zuordnen – die Umfrage bleibt anonym.</div>
       ${rows.length ? `<div class="wrap-x"><table class="tab">
-        <thead><tr><th>Kontakt</th><th>Eingegangen</th></tr></thead>
+        <thead><tr><th>Kontakt</th><th>Eingegangen</th>${RECHTE.darfLoeschen() ? `<th class="keinDruck"></th>` : ""}</tr></thead>
         <tbody>${rows.map(r => `<tr><td>${esc(r.kontakt)}</td>
-          <td>${r.eingereicht ? new Date(r.eingereicht).toLocaleString("de-DE") : "–"}</td></tr>`).join("")}</tbody>
+          <td>${r.eingereicht ? new Date(r.eingereicht).toLocaleString("de-DE") : "–"}</td>
+          ${RECHTE.darfLoeschen()
+            ? `<td class="keinDruck"><button class="btn sec mini" data-kontaktweg="${esc(r.itemId)}">Löschen</button></td>`
+            : ""}</tr>`).join("")}</tbody>
       </table></div>
       <p style="margin-top:14px"><button class="btn sec keinDruck" id="bKontakteCsv">⬇ Als CSV</button></p>`
       : `<p class="leer">Bisher hat sich niemand gemeldet.</p>`}
     </div>`;
+    box.querySelectorAll("[data-kontaktweg]").forEach(b => b.addEventListener("click", async () => {
+      if (!confirm("Diesen Eintrag endgültig löschen?")) return;
+      try {
+        await DATEN.loescheKontakt(b.dataset.kontaktweg);
+        await zeichneKontakte();
+      } catch (e) {
+        alert("Fehlgeschlagen: " + (e.detail || e.message));
+      }
+    }));
+
     $("bKontakteCsv")?.addEventListener("click", () => {
       const csv = "﻿" + ["Kontakt;Eingegangen",
         ...rows.map(r => `${String(r.kontakt).replace(/;/g, ",")};${r.eingereicht}`)].join("\r\n");

@@ -85,7 +85,21 @@ Die Änderung greift, sobald die betreffende Person die Seite neu lädt.
 Wer nicht in der Liste steht, sieht ein Schloss – der Standard ist „kein Zugriff",
 nicht „darf lesen".
 
-## 5. Umfrage beenden
+## 5. Antworten aufräumen
+
+Probeeinsendungen aus der Einrichtung, versehentlich doppelt abgeschickte Bögen
+oder offensichtlicher Unsinn lassen sich direkt in der Anwendung entfernen –
+niemand muss dafür in SharePoint:
+
+*Verwaltung* → Abschnitt **„Antworten von …"** → Zeile suchen → **Löschen**.
+Ebenso im Reiter **Mitmacher** für die freiwilligen Kontaktangaben.
+
+Beides erfordert die Rolle `admin` und ist **endgültig**: SharePoint legt hier
+keine Fassung ab, die man zurückholen könnte. Die Anonymität bleibt dabei
+unberührt – zu einer Antwort gibt es schlicht nichts, was auf eine Person
+zurückführt.
+
+## 6. Umfrage beenden
 
 Status auf **Beendet** setzen. Die Daten bleiben in SharePoint, die Auswertung
 funktioniert unverändert weiter.

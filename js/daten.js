@@ -113,6 +113,7 @@ const DATEN = (() => {
   }
 
   const loescheAntwort = itemId => GRAPH.deleteItem(C.site, L.antworten, itemId);
+  const loescheKontakt = itemId => GRAPH.deleteItem(C.site, L.kontakte, itemId);
 
   /* ── Kontakte (freiwillige Angaben, getrennt gespeichert) ──────── */
 
@@ -226,7 +227,7 @@ const DATEN = (() => {
 
   return {
     umfragen, speichereUmfrage, setzeStatus,
-    antworten, loescheAntwort, kontakte,
+    antworten, loescheAntwort, kontakte, loescheKontakt,
     auswerter, setzeAuswerter, loescheAuswerter,
     listenAnlegen, pruefeListen, vorlage
   };

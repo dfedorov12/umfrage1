@@ -39,6 +39,7 @@ const VERWALTUNG = (() => {
       ${endpunktBlock()}
       ${einrichtungBlock(fehlen)}
       ${umfragenBlock()}
+      ${antwortenBlock()}
       ${auswerterBlock(rechteFehler)}
       ${editorBlock()}`;
 
@@ -108,6 +109,41 @@ const VERWALTUNG = (() => {
         Mitgelieferte Vorlagen: ${vorlagen.map(v => `<button class="btn sec mini" data-uebernehmen="${esc(v)}">${esc(v)} übernehmen</button>`).join(" ")}
       </p>` : ""}
       <div id="umfrageMeldung"></div>
+    </div>`;
+  }
+
+  /** Einzelne Antworten ansehen und löschen, ohne den Umweg über SharePoint.
+   *  Gedacht fürs Aufräumen: Probeeinsendungen aus der Einrichtung, versehentlich
+   *  doppelt abgeschickte Bögen, offensichtlicher Unsinn. Beim Löschen bleibt es
+   *  anonym – es gibt schlicht nichts zu einer Person zurückzuverfolgen.        */
+  function antwortenBlock() {
+    if (!RECHTE.darfLoeschen()) return "";
+    const zeilen = S.alleAntworten || [];
+    const grenze = 50;
+    const kurz = a => {
+      const t = Object.entries(a.antworten || {})
+        .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : (v && typeof v === "object" ? "…" : v)}`)
+        .join(" · ");
+      return t.length > 110 ? t.slice(0, 110) + " …" : t || "(leer)";
+    };
+
+    return `<div class="block">
+      <h3>Antworten von „${esc(S.aktuell?.titel || "–")}“</h3>
+      <div class="frageinfo">${zeilen.length} Einsendung(en). Löschen ist endgültig –
+        SharePoint legt hier keine Fassung ab, die man zurückholen könnte.</div>
+      ${zeilen.length ? `<div class="wrap-x"><table class="tab">
+        <thead><tr><th>Eingegangen</th><th>Standort</th><th>Bereich</th><th>Antwort</th><th class="keinDruck"></th></tr></thead>
+        <tbody>${zeilen.slice(0, grenze).map(a => `<tr>
+          <td>${a.eingereicht ? new Date(a.eingereicht).toLocaleString("de-DE") : "–"}</td>
+          <td>${esc(a.standort || "–")}</td>
+          <td>${esc(a.bereich || "–")}</td>
+          <td class="leer">${esc(kurz(a))}</td>
+          <td class="keinDruck"><button class="btn sec mini" data-antwortweg="${esc(a.itemId)}">Löschen</button></td>
+        </tr>`).join("")}</tbody>
+      </table></div>
+      ${zeilen.length > grenze ? `<p class="leer">Es werden die neuesten ${grenze} gezeigt.</p>` : ""}`
+      : `<p class="leer">Für diese Umfrage liegen keine Antworten vor.</p>`}
+      <div id="antwortenMeldung"></div>
     </div>`;
   }
 
@@ -252,6 +288,21 @@ const VERWALTUNG = (() => {
         await neuLaden();
       } catch (err) {
         $("umfrageMeldung").innerHTML = `<div class="meldung err">${esc(err.detail || err.message)}</div>`;
+      }
+    }));
+
+    /* ── Antworten löschen ────────────────────────────────────────── */
+
+    box.querySelectorAll("[data-antwortweg]").forEach(b => b.addEventListener("click", async () => {
+      if (!confirm("Diese Antwort endgültig löschen?")) return;
+      try {
+        await DATEN.loescheAntwort(b.dataset.antwortweg);
+        await neuLaden();                    // Antworten neu holen (auch für die Diagramme)
+        await zeichne(box, S, neuLaden);     // und danach diesen Block sicher neu aufbauen
+        $("antwortenMeldung").innerHTML = `<div class="meldung ok">Antwort gelöscht.</div>`;
+      } catch (err) {
+        const m = $("antwortenMeldung");
+        if (m) m.innerHTML = `<div class="meldung err">Fehlgeschlagen: ${esc(err.detail || err.message)}</div>`;
       }
     }));
 
