@@ -88,11 +88,39 @@ benutzen. Sie wird **nicht** neu angelegt, hier kommen nur Zeilen dazu:
 
 | Spalte | Wert für diese Anwendung |
 |---|---|
+| `Title` | dieselbe E-Mail (dient nur der Anzeige) |
 | `UserEmail` | E-Mail der Person, kleingeschrieben |
-| `App` | `umfrage1` |
+| `App` | **`umfrage1`** – mit der Ziffer, so steht es in `js/config.js` als `appKey` |
 | `Role` | `viewer`, `editor` oder `admin` |
 
-Gepflegt wird das in der Anwendung unter *Verwaltung → Auswerter*.
+Gepflegt wird das danach in der Anwendung unter *Verwaltung → Auswerter*.
+
+> ### Wenn `umfrage1` sich nicht eintragen lässt
+> Dann ist `App` eine **Auswahlspalte (Choice)** mit festen Werten – ein neuer
+> App-Schlüssel wird von SharePoint dann schlicht abgewiesen. Genau darüber ist
+> „Rund um den Job" schon einmal gestolpert.
+>
+> Zwei Wege, der zweite ist der bessere:
+>
+> 1. In den Spalteneinstellungen `umfrage1` als weiteren Auswahlwert ergänzen.
+> 2. **`App` (und `Role`) auf „Einzelne Textzeile" umstellen.** Vorhandene Werte
+>    bleiben dabei erhalten, und jede künftige Anwendung kommt ohne Spaltenumbau
+>    dazu. Genau so ist es bei „Rund um den Job" gelöst.
+>
+> Ohne diese Änderung kann auch *Verwaltung → Auswerter* nichts speichern – die
+> Anwendung schreibt genau in diese Spalte.
+
+### Sich selbst freischalten (einmalig)
+
+`administrator@dihag.com` ist laut `js/config.js` immer Administrator und käme
+auch ohne Listeneintrag hinein. Damit Sie die Auswertung mit Ihrem **eigenen**
+Konto öffnen können, legen Sie in `AppPermissions` einmal von Hand an:
+
+| Title | UserEmail | App | Role |
+|---|---|---|---|
+| fedorov@dihag.com | fedorov@dihag.com | umfrage1 | admin |
+
+Danach läuft alles Weitere über *Verwaltung → Auswerter*.
 
 ---
 

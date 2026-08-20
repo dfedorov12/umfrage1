@@ -74,11 +74,22 @@ Einstellungen:
 
 ## 2. Nutzlast parsen
 
-**Aktion „Verfassen" (Compose)**, Name exakt `Nutzlast`:
+**Aktion „Verfassen" (Compose)** einfügen und **umbenennen in `Nutzlast`**
+(drei Punkte am Kopf der Aktion → *Umbenennen*):
 
 ```
 json(triggerBody())
 ```
+
+> ### Namen sind hier keine Kosmetik
+> Alle folgenden Ausdrücke sprechen die Aktion über ihren Namen an. Heißt sie
+> weiter „Verfassen", muss überall `outputs('Verfassen')` statt
+> `outputs('Nutzlast')` stehen – sonst liefert der Ausdruck nichts, und zwar
+> ohne Fehlermeldung. **Leerzeichen werden im Ausdruck zu Unterstrichen:**
+> aus der Aktion „Elemente abrufen" wird `body('Elemente_abrufen')`.
+>
+> Am einfachsten: gleich beim Einfügen umbenennen, dann passen die Ausdrücke
+> aus dieser Anleitung wortwörtlich.
 
 *Klemmt es hier?* Wenn `triggerBody()` nicht als Text ankommt, hilft
 `json(string(triggerBody()))`. In der Flow-Historie sieht man unter „Rohe Eingaben"
@@ -101,7 +112,12 @@ outputs('Nutzlast')?['meta']?['dauerSek']
 
 ## 3. Umfrage nachschlagen
 
-**SharePoint → „Elemente abrufen"**
+**SharePoint → „Elemente abrufen"** (Mehrzahl!)
+
+> ⚠️ Nicht „**Element** abrufen" nehmen. Das ist eine andere Aktion (*Get item*),
+> die eine Element-**ID** verlangt – die kennen wir hier nicht, wir suchen ja
+> erst über `UmfrageId`. Richtig ist „**Elemente** abrufen" (*Get items*), nur
+> die hat das Feld **Filterabfrage**.
 
 * Websiteadresse: `https://dihag.sharepoint.com/sites/IT`
 * Liste: `Umfragen`
@@ -133,6 +149,35 @@ coalesce(outputs('Umfrage')?['Status'], 'Fehlt')
 outputs('Nutzlast')?['aktion']
 ```
 
+So sieht der fertige Flow aus – zum Abgleichen, welche Aktion wohin gehört:
+
+```
+manual  (Wenn eine HTTP-Anforderung empfangen wird)
+└─ Nutzlast          Verfassen: json(triggerBody())
+└─ Elemente abrufen  SharePoint, Liste Umfragen, Filterabfrage
+└─ Umfrage           Verfassen: first(body('Elemente_abrufen')?['value'])
+└─ Status            Verfassen: coalesce(outputs('Umfrage')?['Status'],'Fehlt')
+└─ Wechseln  auf  outputs('Nutzlast')?['aktion']
+   ├─ Fall "definition"
+   │   └─ Bedingung „ist aktiv"
+   │       ├─ Wahr   → Antwort  (Fragebogen)
+   │       └─ Falsch → Antwort  (ok:false + Status)
+   ├─ Fall "antwort"
+   │   └─ Bedingung „darf gespeichert werden"
+   │       ├─ Wahr   → Element erstellen (Umfrage_Antworten)
+   │       │           └─ Bedingung „Kontakt vorhanden"
+   │       │               ├─ Wahr   → Element erstellen (Umfrage_Kontakte)
+   │       │               └─ Falsch → (nichts)
+   │       │           → Antwort  { "ok": true }
+   │       └─ Falsch → Antwort  (ok:false)
+   └─ Standard
+       └─ Antwort  (ok:false, "Unbekannte Aktion")
+```
+
+Die beiden **Element erstellen** und die Kontakt-Bedingung gehören also in den
+Fall **antwort**, nicht in „definition" – im Fall „definition" wird nur gelesen
+und geantwortet. Jeder Zweig endet mit genau einer **Antwort**-Aktion.
+
 ### Fall `definition`
 
 Bedingung: `outputs('Status')` **ist gleich** `Aktiv`
@@ -142,9 +187,22 @@ Bedingung: `outputs('Status')` **ist gleich** `Aktiv`
   {
     "ok": true,
     "status": "Aktiv",
-    "umfrage": @{json(outputs('Umfrage')?['FragenJson'])}
+    "umfrage": "@{outputs('Umfrage')?['FragenJson']}"
   }
   ```
+
+  > **Die Anführungszeichen um `@{…}` sind wichtig.** Ohne sie steht dort
+  > `"umfrage": @{…}` – und das ist kein gültiges JSON mehr, weshalb der
+  > Entwurf die Aktion mit **„Ungültige Parameter"** ablehnt. Der Fragebogen
+  > geht deshalb als Zeichenkette raus; die Teilnahmeseite packt ihn selbst
+  > aus (`js/api.js`, `JSON.parse`). Power Automate maskiert beim Einsetzen
+  > in eine JSON-Vorlage korrekt, Anführungszeichen und Umbrüche im Fragebogen
+  > machen also keinen Ärger.
+  >
+  > *Wer es lieber typisiert mag:* Body-Feld leeren, auf **fx** klicken und als
+  > einzigen Ausdruck eintragen –
+  > `addProperty(json('{"ok":true,"status":"Aktiv"}'), 'umfrage', json(outputs('Umfrage')?['FragenJson']))`.
+  > Die Seite versteht beide Varianten.
 * **Nein →** Antwort mit
   ```
   {
@@ -275,6 +333,9 @@ Erwartet: `{"ok":true}` und ein neues Element in `Umfrage_Antworten`.
 
 | Symptom | Ursache | Abhilfe |
 |---|---|---|
+| Aktion zeigt **„Ungültige Parameter"** | Der Rumpf der Antwort ist kein gültiges JSON – meist `"umfrage": @{…}` ohne Anführungszeichen | Ausdruck in Anführungszeichen setzen (Schritt 4) oder das ganze Body-Feld als **fx**-Ausdruck schreiben |
+| Ausdruck bleibt leer, kein Fehler | Aktionsname stimmt nicht (`Verfassen` statt `Nutzlast`) oder Leerzeichen nicht als `_` geschrieben | Aktion umbenennen bzw. `outputs('Elemente_abrufen')`-Schreibweise prüfen |
+| „Element abrufen" verlangt eine ID | falsche Aktion erwischt | „**Elemente** abrufen" (*Get items*) mit Filterabfrage nehmen |
 | Browser meldet „CORS-Fehler" / „Failed to fetch" | Antwort ohne `Access-Control-Allow-Origin` | Kopfzeile in **allen** Antwort-Aktionen ergänzen |
 | `outputs('Nutzlast')` ist leer | Rumpf kam nicht als Text an | `json(string(triggerBody()))` verwenden; Rohe Eingaben in der Flow-Historie ansehen |
 | Antwort landet nicht in SharePoint | Spalte fehlt oder heißt intern anders | Interne Spaltennamen prüfen (Listeneinstellungen → Spalte anklicken → `Field=` in der Adresse) |

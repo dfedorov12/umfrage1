@@ -61,7 +61,18 @@ const API = (() => {
       try {
         const d = await ruf({ aktion: "definition", umfrage: id });
         if (d && d.umfrage) {
-          return { def: d.umfrage, quelle: "flow", status: d.status || "Aktiv", warnung: "" };
+          // Der Fragebogen darf als Objekt ODER als Zeichenkette kommen.
+          // Grund: Im Power-Automate-Entwurf lässt sich ein Ausdruck, der ein
+          // Objekt liefert, nicht mitten in eine JSON-Vorlage schreiben – das
+          // ist dort schlicht kein gültiges JSON. Als Zeichenkette
+          // ("@{outputs('Umfrage')?['FragenJson']}") ist die Vorlage gültig,
+          // und das Auspacken übernimmt diese Zeile.
+          let def = d.umfrage;
+          if (typeof def === "string") {
+            try { def = JSON.parse(def); }
+            catch { throw new Error("Der Fragebogen ist beschädigt (kein gültiges JSON)."); }
+          }
+          return { def, quelle: "flow", status: d.status || "Aktiv", warnung: "" };
         }
         // Der Flow hat geantwortet, liefert aber bewusst keinen Fragebogen:
         // Die Umfrage ist noch Entwurf oder bereits beendet. Dann darf NICHT
