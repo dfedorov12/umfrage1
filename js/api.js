@@ -75,11 +75,15 @@ const API = (() => {
           return { def, quelle: "flow", status: d.status || "Aktiv", warnung: "" };
         }
         // Der Flow hat geantwortet, liefert aber bewusst keinen Fragebogen:
-        // Die Umfrage ist noch Entwurf oder bereits beendet. Dann darf NICHT
-        // auf die Vorlage zurückgefallen werden – sonst wäre ein Entwurf für
-        // alle sichtbar oder eine beendete Umfrage wieder offen.
-        if (d && d.status) {
-          return { def: null, quelle: "flow", status: d.status, warnung: d.fehler || "" };
+        // Die Umfrage ist noch Entwurf, bereits beendet oder gar nicht
+        // angelegt. Das ist eine klare Absage – dann darf NICHT auf die
+        // Vorlage im Repository zurückgefallen werden, sonst wäre ein Entwurf
+        // für alle sichtbar oder eine beendete Umfrage wieder offen.
+        // Auf die Vorlage wird nur zurückgegriffen, wenn der Flow gar nicht
+        // erreichbar ist (siehe catch).
+        if (d && d.ok === false) {
+          return { def: null, quelle: "flow", status: d.status || "Unbekannt",
+                   warnung: d.fehler || "" };
         }
         warnung = d?.fehler || "Der Server kennt diese Umfrage nicht.";
       } catch (e) {
