@@ -26,6 +26,21 @@ const API = (() => {
 
   const scharf = () => !!(C.endpunkt || "").trim();
 
+  /** Alles jenseits von ASCII als \uXXXX schreiben.
+   *
+   *  Power Automate liest den Rumpf einer „text/plain"-Anfrage nicht zuverlässig
+   *  als UTF-8 – gemessen: „Gießerei" kam als „Gie?erei" in SharePoint an,
+   *  obwohl der Browser korrekte UTF-8-Bytes samt `charset=UTF-8` schickt. Bei
+   *  einer deutschen Umfrage („Gießerei", „Jubiläen", „möchte ich nicht angeben")
+   *  wäre das ein Datenverlust in jeder zweiten Antwort.
+   *
+   *  Mit \u-Escapes stehen auf der Leitung nur noch ASCII-Zeichen; die Umlaute
+   *  entstehen erst beim JSON-Parsen im Flow und können unterwegs nicht mehr
+   *  falsch gedeutet werden. Gültiges JSON bleibt es dabei – Escapes sind im
+   *  Standard ausdrücklich vorgesehen.                                        */
+  const nurAscii = s => s.replace(/[\u0080-\uffff]/g,
+    c => "\\u" + c.charCodeAt(0).toString(16).padStart(4, "0"));
+
   async function ruf(nutzlast, timeoutMs = 20000) {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -33,7 +48,7 @@ const API = (() => {
       const r = await fetch(C.endpunkt, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=UTF-8" },
-        body: JSON.stringify(nutzlast),
+        body: nurAscii(JSON.stringify(nutzlast)),
         signal: ctrl.signal
       });
       const roh = await r.text();
