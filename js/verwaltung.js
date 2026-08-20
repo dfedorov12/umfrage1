@@ -87,7 +87,8 @@ const VERWALTUNG = (() => {
         <td>${u.def ? (u.def.fragen || []).filter(f => f.typ !== "abschnitt").length + " Fragen" : "–"}</td>
         <td class="keinDruck">
           ${u.itemId ? `<button class="btn sec mini" data-bearbeiten="${esc(u.id)}">Bearbeiten</button>
-             <button class="btn sec mini" data-status="${esc(u.id)}">Status …</button>`
+             <button class="btn sec mini" data-status="${esc(u.id)}">Status …</button>
+             <button class="btn sec mini" data-kopie="${esc(u.id)}">Kopieren</button>`
             : `<button class="btn sec mini" data-uebernehmen="${esc(u.id)}">Aus Vorlage anlegen</button>`}
           <button class="btn sec mini" data-link="${esc(u.id)}">Link</button>
           <a class="btn sec mini" href="${esc(teilnahmeLink(u.id))}&vorschau" target="_blank"
@@ -132,8 +133,15 @@ const VERWALTUNG = (() => {
       <div class="frageinfo">${zeilen.length} Einsendung(en). Löschen ist endgültig –
         SharePoint legt hier keine Fassung ab, die man zurückholen könnte.</div>
       ${zeilen.length ? `<div class="wrap-x"><table class="tab">
-        <thead><tr><th>Eingegangen</th><th>Standort</th><th>Bereich</th><th>Antwort</th><th class="keinDruck"></th></tr></thead>
+        <thead><tr>
+          <th class="keinDruck" style="width:34px">
+            <input type="checkbox" id="alleWaehlen" title="Alle angezeigten auswählen">
+          </th>
+          <th>Eingegangen</th><th>Standort</th><th>Bereich</th><th>Antwort</th>
+          <th class="keinDruck"></th>
+        </tr></thead>
         <tbody>${zeilen.slice(0, grenze).map(a => `<tr>
+          <td class="keinDruck"><input type="checkbox" class="antwortWahl" value="${esc(a.itemId)}"></td>
           <td>${a.eingereicht ? new Date(a.eingereicht).toLocaleString("de-DE") : "–"}</td>
           <td>${esc(a.standort || "–")}</td>
           <td>${esc(a.bereich || "–")}</td>
@@ -141,7 +149,12 @@ const VERWALTUNG = (() => {
           <td class="keinDruck"><button class="btn sec mini" data-antwortweg="${esc(a.itemId)}">Löschen</button></td>
         </tr>`).join("")}</tbody>
       </table></div>
-      ${zeilen.length > grenze ? `<p class="leer">Es werden die neuesten ${grenze} gezeigt.</p>` : ""}`
+      ${zeilen.length > grenze ? `<p class="leer">Es werden die neuesten ${grenze} von
+        ${zeilen.length} gezeigt. „Alle löschen“ betrifft trotzdem alle ${zeilen.length}.</p>` : ""}
+      <p class="keinDruck" style="margin-top:14px">
+        <button class="btn sec mini" id="bAuswahlWeg" disabled>Ausgewählte löschen</button>
+        <button class="btn sec mini" id="bAlleWeg">Alle ${zeilen.length} Antworten löschen …</button>
+      </p>`
       : `<p class="leer">Für diese Umfrage liegen keine Antworten vor.</p>`}
       <div id="antwortenMeldung"></div>
     </div>`;
@@ -269,9 +282,46 @@ const VERWALTUNG = (() => {
       try {
         const def = await DATEN.vorlage(id);
         await DATEN.speichereUmfrage(def, "Entwurf", null);
-        m.innerHTML = `<div class="meldung ok">Angelegt als Entwurf. Zum Freischalten `
-          + `den Status auf „Aktiv“ setzen.</div>`;
         await neuLaden();
+        await zeichne(box, S, neuLaden);
+        $("umfrageMeldung").innerHTML = `<div class="meldung ok">Angelegt als Entwurf. `
+          + `Zum Freischalten den Status auf „Aktiv“ setzen.</div>`;
+      } catch (err) {
+        m.innerHTML = `<div class="meldung err">Fehlgeschlagen: ${esc(err.detail || err.message)}</div>`;
+      }
+    }));
+
+    /* Kopieren: der Weg zur nächsten Umfrage, ohne JSON anzufassen. Fragen,
+       Abschnitte und Einstellungen werden übernommen, Kennung und Titel neu
+       vergeben – die Antworten der Vorlage bleiben selbstverständlich dort. */
+    box.querySelectorAll("[data-kopie]").forEach(b => b.addEventListener("click", async () => {
+      const u = S.umfragen.find(x => x.id === b.dataset.kopie);
+      const m = $("umfrageMeldung");
+      if (!u?.def) {
+        return m.innerHTML = `<div class="meldung err">Zu „${esc(b.dataset.kopie)}“ ist kein `
+          + `Fragebogen hinterlegt – da gibt es nichts zu kopieren.</div>`;
+      }
+      const roh = prompt("Kennung der neuen Umfrage (steht später im Link ?u=…):",
+        u.id.replace(/-?\d{4}$/, "") + "-" + (new Date().getFullYear()));
+      if (roh === null) return;
+      const neueId = String(roh).trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-|-$/g, "");
+      if (!neueId) {
+        return m.innerHTML = `<div class="meldung err">Die Kennung darf nicht leer sein.</div>`;
+      }
+      if (S.umfragen.some(x => x.id === neueId)) {
+        return m.innerHTML = `<div class="meldung err">Die Kennung „${esc(neueId)}“ ist schon vergeben.</div>`;
+      }
+      const titel = prompt("Titel der neuen Umfrage:", u.def.titel || u.titel);
+      if (titel === null) return;
+
+      m.innerHTML = `<div class="meldung info">Kopie wird angelegt …</div>`;
+      try {
+        await DATEN.speichereUmfrage({ ...u.def, id: neueId, titel: String(titel).trim() || neueId },
+                                     "Entwurf", null);
+        await neuLaden();
+        await zeichne(box, S, neuLaden);
+        $("umfrageMeldung").innerHTML = `<div class="meldung ok">„${esc(neueId)}“ als Entwurf `
+          + `angelegt. Fragen jetzt über „Bearbeiten“ anpassen, danach Status auf „Aktiv“.</div>`;
       } catch (err) {
         m.innerHTML = `<div class="meldung err">Fehlgeschlagen: ${esc(err.detail || err.message)}</div>`;
       }
@@ -292,6 +342,65 @@ const VERWALTUNG = (() => {
     }));
 
     /* ── Antworten löschen ────────────────────────────────────────── */
+
+    const gewaehlte = () => [...box.querySelectorAll(".antwortWahl:checked")].map(c => c.value);
+
+    const auswahlKnopf = () => {
+      const b = $("bAuswahlWeg");
+      if (!b) return;
+      const n = gewaehlte().length;
+      b.disabled = !n;
+      b.textContent = n ? `Ausgewählte löschen (${n})` : "Ausgewählte löschen";
+    };
+
+    $("alleWaehlen")?.addEventListener("change", e => {
+      box.querySelectorAll(".antwortWahl").forEach(c => { c.checked = e.target.checked; });
+      auswahlKnopf();
+    });
+    box.querySelectorAll(".antwortWahl").forEach(c => c.addEventListener("change", auswahlKnopf));
+
+    /** Mehrere Antworten nacheinander löschen, mit Fortschritt und ohne
+     *  Abbruch beim ersten Fehler – sonst bleibt nach einem Aussetzer unklar,
+     *  was gelöscht wurde und was nicht. */
+    async function loescheMehrere(ids, was) {
+      const m = $("antwortenMeldung");
+      let weg = 0, schief = 0;
+      for (const [i, id] of ids.entries()) {
+        if (m) m.innerHTML = `<div class="meldung info">${was}: ${i + 1} von ${ids.length} …</div>`;
+        try { await DATEN.loescheAntwort(id); weg++; } catch { schief++; }
+      }
+      await neuLaden();
+      await zeichne(box, S, neuLaden);
+      const m2 = $("antwortenMeldung");
+      if (m2) {
+        m2.innerHTML = schief
+          ? `<div class="meldung err">${weg} gelöscht, ${schief} nicht – bitte erneut versuchen.</div>`
+          : `<div class="meldung ok">${weg} Antwort(en) gelöscht.</div>`;
+      }
+    }
+
+    $("bAuswahlWeg")?.addEventListener("click", async () => {
+      const ids = gewaehlte();
+      if (!ids.length) return;
+      if (!confirm(`${ids.length} ausgewählte Antwort(en) endgültig löschen?`)) return;
+      await loescheMehrere(ids, "Lösche Auswahl");
+    });
+
+    $("bAlleWeg")?.addEventListener("click", async () => {
+      const alle = (S.alleAntworten || []).map(a => a.itemId);
+      if (!alle.length) return;
+      // Bewusst mit Tippen bestätigen: Ein Fehlklick würde hier die komplette
+      // Befragung vernichten, und ein „OK“ ist schnell gedrückt.
+      const wort = prompt(`Damit werden ALLE ${alle.length} Antworten von `
+        + `„${S.aktuell?.titel}“ endgültig gelöscht.\n\n`
+        + `Zum Bestätigen bitte LOESCHEN eingeben:`);
+      if (String(wort || "").trim().toUpperCase() !== "LOESCHEN") {
+        const m = $("antwortenMeldung");
+        if (m) m.innerHTML = `<div class="meldung info">Abgebrochen – es wurde nichts gelöscht.</div>`;
+        return;
+      }
+      await loescheMehrere(alle, "Lösche alle");
+    });
 
     box.querySelectorAll("[data-antwortweg]").forEach(b => b.addEventListener("click", async () => {
       if (!confirm("Diese Antwort endgültig löschen?")) return;
@@ -371,9 +480,10 @@ const VERWALTUNG = (() => {
       try {
         const u = S.umfragen.find(x => x.id === bearbeitet.id);
         await DATEN.speichereUmfrage(def, u?.status || "Entwurf", bearbeitet.itemId);
-        m.innerHTML = `<div class="meldung ok">Gespeichert.</div>`;
         bearbeitet = null;
         await neuLaden();
+        await zeichne(box, S, neuLaden);
+        $("umfrageMeldung").innerHTML = `<div class="meldung ok">Fragebogen gespeichert.</div>`;
       } catch (err) {
         m.innerHTML = `<div class="meldung err">Fehlgeschlagen: ${esc(err.detail || err.message)}</div>`;
       }

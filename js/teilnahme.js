@@ -198,8 +198,14 @@
       $("weiterBtn").disabled = false;
       $("zurueckBtn").disabled = false;
       $("weiterBtn").textContent = "Antworten absenden";
-      meldung("err", "Das Absenden hat nicht geklappt: " + (e.message || e)
-        + " — Ihre Eingaben bleiben erhalten, bitte versuchen Sie es später noch einmal.");
+      // Bewusst eine eigene, ruhige Formulierung statt der Meldung aus dem Flow:
+      // Die ist für die Technik gedacht („Diese Umfrage ist nicht freigeschaltet")
+      // und verwirrt jemanden, der gerade fünf Minuten investiert hat. Der genaue
+      // Wortlaut steht in der Konsole, für die Fehlersuche.
+      console.warn("[Umfrage] Absenden abgelehnt:", e.message || e);
+      meldung("err", "Das Absenden hat leider nicht geklappt. Ihre Eingaben bleiben "
+        + "erhalten – bitte versuchen Sie es in ein paar Minuten noch einmal. "
+        + "Wenn es dann immer noch klemmt, sagen Sie bitte dem Kommunikationsteam Bescheid.");
     }
   }
 

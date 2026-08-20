@@ -219,6 +219,15 @@
     if (!S.antworten.length) {
       html += `<div class="block"><p class="leer">Für diese Auswahl liegen keine Antworten vor.</p></div>`;
     } else {
+      const tage = ANALYSE.verlauf(S.antworten);
+      if (tage.length > 1) {
+        html += `<div class="block">
+          <h3>Rücklauf pro Tag</h3>
+          <div class="frageinfo">Zeigt, wann Antworten eingehen – hilfreich, um den
+            Erfolg von Aushang, E-Mail oder Erinnerung zu erkennen.</div>
+          ${ANALYSE.balkenHtml(tage, { farbe: "var(--lichtblau)" })}
+        </div>`;
+      }
       for (const { frage, ergebnis } of ANALYSE.alles(def(), S.antworten)) {
         if (ergebnis.typ === "text") continue;   // eigener Reiter
         html += `<div class="block">

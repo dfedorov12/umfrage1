@@ -102,6 +102,26 @@ const ANALYSE = (() => {
     };
   }
 
+  /** Rücklauf je Tag – zeigt während der Laufzeit, ob eine Erinnerung nötig ist
+   *  und ob ein Aushang gewirkt hat. Tage ohne Antwort bleiben sichtbar, sonst
+   *  täuscht die Reihe einen gleichmäßigen Eingang vor. */
+  function verlauf(rows, maxTage = 30) {
+    const tage = rows.map(r => String(r.eingereicht).slice(0, 10)).filter(t => t.length === 10);
+    if (!tage.length) return [];
+    const zaehler = new Map();
+    for (const t of tage) zaehler.set(t, (zaehler.get(t) || 0) + 1);
+    const sortiert = [...zaehler.keys()].sort();
+    const von = new Date(sortiert[0]), bis = new Date(sortiert[sortiert.length - 1]);
+    const out = [];
+    for (let d = new Date(von); d <= bis && out.length < maxTage; d.setDate(d.getDate() + 1)) {
+      const iso = d.toISOString().slice(0, 10);
+      const anzahl = zaehler.get(iso) || 0;
+      out.push({ label: d.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit" }),
+                 anzahl, anteil: prozent(anzahl, tage.length) });
+    }
+    return out;
+  }
+
   /** Kennzahlen für den Kopf der Auswertung. */
   function kennzahlen(def, rows) {
     const skalen = (def.fragen || []).filter(f => f.typ === "skala");
@@ -214,7 +234,7 @@ const ANALYSE = (() => {
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
   }
 
-  return { esc, prozent, runde, frage, alles, vergleich, kennzahlen,
+  return { esc, prozent, runde, frage, alles, vergleich, verlauf, kennzahlen,
            balkenHtml, ergebnisHtml, csv, download };
 })();
 

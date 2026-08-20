@@ -91,7 +91,15 @@ Probeeinsendungen aus der Einrichtung, versehentlich doppelt abgeschickte Bögen
 oder offensichtlicher Unsinn lassen sich direkt in der Anwendung entfernen –
 niemand muss dafür in SharePoint:
 
-*Verwaltung* → Abschnitt **„Antworten von …"** → Zeile suchen → **Löschen**.
+*Verwaltung* → Abschnitt **„Antworten von …"**. Dort gibt es drei Wege:
+
+* **Löschen** in der Zeile – einzelne Einsendung.
+* Häkchen setzen (oder das Kästchen in der Kopfzeile für alle) und
+  **Ausgewählte löschen** – mehrere auf einmal.
+* **Alle N Antworten löschen …** – räumt die Umfrage komplett leer. Weil ein
+  Fehlklick hier die ganze Befragung vernichten würde, muss man zur Bestätigung
+  das Wort `LOESCHEN` eintippen; ein schnelles „OK" genügt nicht.
+
 Ebenso im Reiter **Mitmacher** für die freiwilligen Kontaktangaben.
 
 Beides erfordert die Rolle `admin` und ist **endgültig**: SharePoint legt hier
@@ -124,9 +132,11 @@ Nur die Konten, die unter *Verwaltung → Auswerter* eingetragen sind. Alle ande
 sehen beim Aufruf der Auswertung ein Schloss – auch dann, wenn sie den Link kennen.
 
 **Wir wollen eine zweite Umfrage (z. B. zum neuen Intranet).**
-Das geht ohne Programmierung: In der Verwaltung eine bestehende Umfrage öffnen,
-den Fragebogen als Vorlage kopieren, `id` und `titel` ändern, Fragen anpassen,
-speichern und auf *Aktiv* setzen. Der Link lautet dann `…/?u=<neue-id>`.
+Das geht ohne Programmierung: In der Verwaltung bei der bestehenden Umfrage auf
+**Kopieren** klicken, Kennung und Titel vergeben – fertig ist ein Entwurf mit
+allen Fragen. Danach über **Bearbeiten** die Fragen anpassen und den Status auf
+*Aktiv* setzen. Der Link lautet dann `…/?u=<neue-kennung>`.
+Die Antworten der Vorlage bleiben selbstverständlich bei der alten Umfrage.
 Die Fragetypen sind im README beschrieben; bei Bedarf hilft die IT beim Zuschnitt.
 
 **Was sagt der Betriebsrat dazu?**
