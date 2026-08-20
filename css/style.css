@@ -158,10 +158,18 @@ textarea { min-height: 90px; resize: vertical; }
 }
 .skala-labels span:last-child { text-align: right; }
 
-/* Raster (Matrix): je Zeile eine Skala – am Handy untereinander */
+/* Raster (Matrix): je Zeile eine Skala – am Handy untereinander.
+   Die Bedeutung der Zahlen steht einmal oben statt unter jeder Zeile. */
+.matrix-legende {
+  display: flex; justify-content: space-between; gap: 12px;
+  margin-top: 12px; padding: 8px 12px;
+  background: #f2f5f9; border-radius: var(--radius);
+  font-size: 14px; color: var(--muted);
+}
+.matrix-legende b { color: var(--navy); }
 .matrix-zeile { padding: 12px 0; border-top: 1px dashed var(--border-2); }
 .matrix-zeile:first-child { border-top: 0; }
-.matrix-zeile .mz-text { font-size: 15px; margin-bottom: 6px; }
+.matrix-zeile .mz-text { font-size: 15px; margin-bottom: 6px; font-weight: 500; color: var(--navy); }
 
 /* Honigtopf: für Menschen unsichtbar, Bots füllen ihn aus */
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }

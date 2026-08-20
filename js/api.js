@@ -72,7 +72,14 @@ const API = (() => {
    *  @returns {Promise<{def:object, quelle:"flow"|"vorlage", status:string, warnung:string}>} */
   async function definition(id) {
     let warnung = "";
-    if (scharf()) {
+
+    // `?vorlage` überspringt den Flow und zeigt den Fragebogen aus dem
+    // Repository. Gedacht zum Gegenlesen, bevor eine geänderte Fassung in
+    // SharePoint gespeichert wird – ausgeliefert wird sonst immer die dortige.
+    const nurVorlage = typeof location !== "undefined"
+      && new URLSearchParams(location.search).has("vorlage");
+
+    if (scharf() && !nurVorlage) {
       try {
         const d = await ruf({ aktion: "definition", umfrage: id });
 

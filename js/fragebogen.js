@@ -54,8 +54,27 @@ const FRAGEBOGEN = (() => {
       }
       grob[grob.length - 1].fragen.push(f);
     }
-    const out = [];
+    // Fragen mit `eigenerSchritt` bekommen einen Bildschirm für sich allein.
+    // Gedacht für die Raster: „Wie sehr interessieren Sie folgende Themen?"
+    // ist mit dreizehn Zeilen für sich schon eine Bildschirmseite; zusammen mit
+    // weiteren Fragen wirkt der Schritt erschlagend.
+    const feiner = [];
     for (const s of grob) {
+      let laufend = null;
+      for (const f of s.fragen) {
+        if (f.eigenerSchritt) {
+          feiner.push({ kopf: s.kopf, fragen: [f] });
+          laufend = null;
+          continue;
+        }
+        if (!laufend) { laufend = { kopf: s.kopf, fragen: [] }; feiner.push(laufend); }
+        laufend.fragen.push(f);
+      }
+      if (!s.fragen.length && s.kopf) feiner.push(s);
+    }
+
+    const out = [];
+    for (const s of feiner) {
       if (!s.fragen.length) { if (s.kopf) out.push(s); continue; }
       if (!max || s.fragen.length <= max) { out.push(s); continue; }
       // Gleichmäßig aufteilen statt „voll, voll, Rest“ – neun Fragen ergeben
@@ -149,13 +168,24 @@ const FRAGEBOGEN = (() => {
     } else if (f.typ === "matrix") {
       const box = document.createElement("div");
       state[f.id] = state[f.id] || {};
+      const min = f.matrixMin ?? 1, max = f.matrixMax ?? 5;
+
+      // Die Bedeutung der Zahlen steht EINMAL oben, nicht unter jeder Zeile.
+      // Bei dreizehn Themen wären das sonst dreizehn Wiederholungen derselben
+      // Beschriftung – am Handy eine Wand aus Kleingedrucktem.
+      if (f.matrixMinLabel || f.matrixMaxLabel) {
+        const legende = document.createElement("div");
+        legende.className = "matrix-legende";
+        legende.innerHTML = `<span><b>${min}</b> = ${esc(f.matrixMinLabel || "")}</span>`
+          + `<span><b>${max}</b> = ${esc(f.matrixMaxLabel || "")}</span>`;
+        box.appendChild(legende);
+      }
+
       for (const zeile of (f.optionen || [])) {
         const z = document.createElement("div");
         z.className = "matrix-zeile";
         z.innerHTML = `<div class="mz-text">${esc(zeile)}</div>`;
-        z.appendChild(skalaBlock(
-          { min: f.matrixMin ?? 1, max: f.matrixMax ?? 5,
-            minLabel: f.matrixMinLabel, maxLabel: f.matrixMaxLabel },
+        z.appendChild(skalaBlock({ min, max },
           state[f.id][zeile],
           w => { state[f.id][zeile] = w; el.classList.remove("fehlt"); onChange(f, state[f.id]); }));
         box.appendChild(z);

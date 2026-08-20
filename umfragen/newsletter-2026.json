@@ -101,10 +101,11 @@
     },
     {
       "id": "themen",
-      "typ": "checkbox",
+      "typ": "matrix",
       "text": "Wie sehr interessieren Sie die folgenden Themen?",
-      "hilfe": "Bitte wählen Sie die für Sie wichtigsten aus (gerne mehrere).",
+      "hilfe": "Bitte je Thema eine Zahl antippen. 1 = gar nicht, 5 = sehr.",
       "pflicht": false,
+      "eigenerSchritt": true,
       "optionen": [
         "Neuigkeiten aus der Geschäftsführung",
         "Neues aus meinem eigenen Werk",
@@ -120,12 +121,17 @@
         "Unsere Produkte und wo sie eingesetzt werden",
         "Strategieentwicklung der Gruppe"
       ],
-      "sonstiges": true,
-      "alternativTyp": "matrix",
       "matrixMin": 1,
       "matrixMax": 5,
       "matrixMinLabel": "gar nicht",
       "matrixMaxLabel": "sehr"
+    },
+    {
+      "id": "themen_fehlt",
+      "typ": "text",
+      "text": "Fehlt Ihnen ein Thema? Welches?",
+      "pflicht": false,
+      "zeilen": 2
     },
     {
       "id": "besser",

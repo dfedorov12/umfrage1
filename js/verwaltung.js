@@ -243,6 +243,10 @@ const VERWALTUNG = (() => {
       <p style="margin-top:12px">
         <button class="btn" id="bSpeichern">Speichern</button>
         <button class="btn sec" id="bPruefen">Nur prüfen</button>
+        ${(C.vorlagen || []).includes(bearbeitet.id)
+          ? `<button class="btn sec" id="bVorlageLaden"
+               title="Holt den Fragebogen aus dem Repository in dieses Feld – gespeichert wird erst mit „Speichern“">
+               ↻ Vorlage aus dem Repository laden</button>` : ""}
         <button class="btn sec" id="bAbbrechen">Schließen</button>
       </p>
     </div>`;
@@ -473,6 +477,24 @@ const VERWALTUNG = (() => {
         auswerterMeldung("err", "Fehlgeschlagen: " + (err.detail || err.message));
       }
     }));
+
+    /* Vorlage nachladen: Die ausgelieferte Fassung steht in SharePoint, nicht
+       im Repository. Wird der Fragebogen dort weiterentwickelt (etwa eine Frage
+       von Mehrfachauswahl auf Skala umgestellt), holt dieser Knopf den neuen
+       Stand ins Feld. Gespeichert wird bewusst erst mit „Speichern“ – so lässt
+       sich vorher vergleichen. */
+    $("bVorlageLaden")?.addEventListener("click", async () => {
+      const m = $("editorMeldung");
+      try {
+        const def = await DATEN.vorlage(bearbeitet.id);
+        $("jsonEditor").value = JSON.stringify(def, null, 1);
+        const anzahl = (def.fragen || []).filter(f => f.typ !== "abschnitt").length;
+        m.innerHTML = `<div class="meldung info">Vorlage geladen: ${anzahl} Fragen. `
+          + `Noch nichts gespeichert – bitte durchsehen und dann „Speichern“.</div>`;
+      } catch (err) {
+        m.innerHTML = `<div class="meldung err">Vorlage nicht ladbar: ${esc(err.message)}</div>`;
+      }
+    });
 
     $("bAbbrechen")?.addEventListener("click", () => { bearbeitet = null; zeichne(box, S, neuLaden); });
     $("bPruefen")?.addEventListener("click", () => pruefe());

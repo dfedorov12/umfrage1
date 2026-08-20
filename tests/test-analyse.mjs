@@ -91,8 +91,43 @@ pruefe("BOM für Excel", csv.charCodeAt(0), 0xFEFF);
 console.log("Fragebogen");
 pruefe("ohne Teilung: 1 Schritt", FRAGEBOGEN.schritte(def, 0).length, 1);
 pruefe("mit Teilung à 2: 3 Schritte", FRAGEBOGEN.schritte(def, 2).length, 3);
-pruefe("Vorlage: 15 Fragen", vorlage.fragen.filter(f => f.typ !== "abschnitt").length, 15);
-pruefe("Vorlage: 5 Schritte à 4", FRAGEBOGEN.schritte(vorlage, 4).length, 5);
+pruefe("Vorlage: 16 Fragen", vorlage.fragen.filter(f => f.typ !== "abschnitt").length, 16);
+pruefe("Vorlage: 6 Schritte à 4", FRAGEBOGEN.schritte(vorlage, 4).length, 6);
+
+/* ── Themenfrage als Raster (1–5 je Thema) ──────────────────────── */
+
+console.log("Raster");
+const themen = vorlage.fragen.find(f => f.id === "themen");
+pruefe("Themenfrage ist ein Raster", themen.typ, "matrix");
+pruefe("Skala geht von 1 bis 5", [themen.matrixMin, themen.matrixMax], [1, 5]);
+pruefe("13 Themen als Zeilen", themen.optionen.length, 13);
+pruefe("Ersatz für „Sonstiges“ vorhanden",
+  !!vorlage.fragen.find(f => f.id === "themen_fehlt"), true);
+
+// Das Raster soll einen Bildschirm für sich bekommen
+const schritteVorlage = FRAGEBOGEN.schritte(vorlage, 4);
+const rasterSchritt = schritteVorlage.find(s => s.fragen.some(f => f.id === "themen"));
+pruefe("Raster steht allein auf seinem Schritt", rasterSchritt.fragen.map(f => f.id), ["themen"]);
+
+// Auswertung: Mittelwert je Zeile, absteigend sortiert
+const rasterZeilen = [
+  zeile({ themen: { "Arbeitssicherheit": 5, "Zahlen & Finanzlage der Gruppe": 2 } }, "A", "Produktion"),
+  zeile({ themen: { "Arbeitssicherheit": 4, "Zahlen & Finanzlage der Gruppe": 1 } }, "B", "Büro"),
+  zeile({ }, "B", "Büro")
+];
+const rasterErgebnis = ANALYSE.frage(themen, rasterZeilen);
+pruefe("Raster: Typ erkannt", rasterErgebnis.typ, "matrix");
+pruefe("Raster: bestbewertetes Thema zuerst",
+  rasterErgebnis.zeilen[0], { label: "Arbeitssicherheit", n: 2, schnitt: 4.5 });
+pruefe("Raster: unbeantwortete Themen zählen nicht mit",
+  rasterErgebnis.zeilen.find(z => z.label === "Aus- und Weiterbildung / HR-Themen"),
+  { label: "Aus- und Weiterbildung / HR-Themen", n: 0, schnitt: null });
+
+const rasterCsv = ANALYSE.csv({ fragen: [themen] }, rasterZeilen).split("\r\n");
+
+pruefe("Raster im CSV lesbar",
+  rasterCsv[1].includes("Arbeitssicherheit: 5") && rasterCsv[1].includes("Zahlen & Finanzlage der Gruppe: 2"),
+  true);
 pruefe("Pflichtfragen erkannt",
   FRAGEBOGEN.fehlend(vorlage.fragen, {}), ["gefallen", "verstaendlich", "angesprochen"]);
 

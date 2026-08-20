@@ -154,8 +154,15 @@ tests/qr-lesetest.py    QR-Symbole mit einem echten Decoder lesen (OpenCV)
 * `auswertung: "standort" | "bereich"` – Wert wandert zusätzlich in eine eigene
   SharePoint-Spalte und wird damit zum Filter der Auswertung
 * `kontakt: true` – Antwort wird **getrennt** gespeichert (siehe oben)
-* `matrix` – je Option eine eigene Skala (z. B. „Wie sehr interessieren Sie
-  folgende Themen?" von 1 bis 5)
+* `matrix` – je Option eine eigene Skala. So ist die Themenfrage des
+  Newsletter-Bogens gestellt: dreizehn Themen, jeweils 1 („gar nicht") bis 5
+  („sehr"). Die Bedeutung der Zahlen steht einmal über dem Raster, nicht unter
+  jeder Zeile – sonst dreizehn Wiederholungen derselben Beschriftung.
+* `eigenerSchritt: true` – die Frage bekommt einen Bildschirm für sich. Für
+  Raster sinnvoll, die allein schon eine Bildschirmseite füllen.
+* `?vorlage` an der Teilnahme-Adresse zeigt den Fragebogen **aus dem
+  Repository** statt der in SharePoint gespeicherten Fassung – zum Gegenlesen,
+  bevor eine Änderung gespeichert wird.
 
 ## Entwicklung
 
