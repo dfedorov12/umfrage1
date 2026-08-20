@@ -207,6 +207,39 @@ und geantwortet. Jeder Zweig endet mit genau einer **Antwort**-Aktion.
 
 ### Fall `definition`
 
+**Keine Bedingung.** Eine einzige **Antwort**-Aktion (Schritt 6) mit dem Rumpf:
+
+```
+{
+  "ok": true,
+  "status": "@{outputs('Status')}",
+  "umfrage": "@{outputs('Umfrage')?['FragenJson']}"
+}
+```
+
+Das war früher eine Verzweigung mit zwei Antworten. Sie ist entfallen, weil hier
+in der Praxis fast jeder Einrichtungsfehler passiert ist: Bedingung vergleicht
+das Auswahl-Objekt statt des Wortes, Rumpf im falschen Zweig, Leerzeichen im
+Vergleichswert. Nichts davon meldet der Entwurf – es antwortet nur stumm falsch.
+
+**Die Entscheidung trifft jetzt die Teilnahmeseite** (`js/api.js`): Sie zeigt den
+Fragebogen ausschließlich, wenn `status` gleich `Aktiv` ist (Groß-/Kleinschreibung
+und Leerzeichen egal). Bei `Entwurf`, `Beendet` oder `Fehlt` erscheint die
+passende Meldung – und zwar ohne auf die Vorlage im Repository zurückzufallen.
+Das ist an sieben Fällen automatisiert geprüft, statt im Entwurf zusammengeklickt.
+
+> **Der Preis dieser Vereinfachung:** Der Fragebogen eines *Entwurfs* wird zwar
+> nicht angezeigt, aber technisch schon an den Browser geschickt – wer die
+> Netzwerkanzeige öffnet, könnte ihn lesen. Für eine Mitarbeiterbefragung ist das
+> unerheblich (die Fragen liegen ohnehin als Vorlage im öffentlichen Repository).
+> Wer es strenger braucht, baut die Bedingung wieder ein:
+> linkes Feld über **fx** `equals(toLower(trim(string(outputs('Status')))), 'aktiv')`,
+> Operator **ist gleich**, rechtes Feld `true` – im Wahr-Zweig der obige Rumpf,
+> im Falsch-Zweig `{ "ok": false, "status": "@{outputs('Status')}" }`.
+
+<details>
+<summary>Frühere Fassung mit Bedingung (nicht mehr nötig)</summary>
+
 Bedingung: `outputs('Status')` **ist gleich** `Aktiv`
 
 * **Ja →** Antwort (siehe Schritt 6) mit Rumpf
@@ -240,6 +273,8 @@ Bedingung: `outputs('Status')` **ist gleich** `Aktiv`
   ```
   Die Teilnahmeseite zeigt dann „noch nicht freigegeben" bzw. „abgeschlossen" –
   und fällt **nicht** auf die Vorlage im Repository zurück.
+
+</details>
 
 ### Fall `antwort`
 

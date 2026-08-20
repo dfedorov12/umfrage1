@@ -60,7 +60,16 @@ const API = (() => {
     if (scharf()) {
       try {
         const d = await ruf({ aktion: "definition", umfrage: id });
-        if (d && d.umfrage) {
+
+        // Der Status entscheidet, nicht der Flow. Damit darf die Annahmestelle
+        // schlicht immer den Fragebogen samt Status zurückgeben – eine
+        // Verzweigung weniger, die man im Entwurf falsch klicken kann. Nur
+        // „Aktiv" wird angezeigt; „Entwurf", „Beendet" oder „Fehlt" führen zur
+        // Absage, ohne dass die Seite auf die Vorlage zurückfällt.
+        const status = String(d?.status || "").trim();
+        const aktiv  = status.toLowerCase() === "aktiv";
+
+        if (d && d.ok !== false && aktiv && d.umfrage) {
           // Der Fragebogen darf als Objekt ODER als Zeichenkette kommen.
           // Grund: Im Power-Automate-Entwurf lässt sich ein Ausdruck, der ein
           // Objekt liefert, nicht mitten in eine JSON-Vorlage schreiben – das
@@ -81,8 +90,8 @@ const API = (() => {
         // für alle sichtbar oder eine beendete Umfrage wieder offen.
         // Auf die Vorlage wird nur zurückgegriffen, wenn der Flow gar nicht
         // erreichbar ist (siehe catch).
-        if (d && d.ok === false) {
-          return { def: null, quelle: "flow", status: d.status || "Unbekannt",
+        if (d && (d.ok === false || status)) {
+          return { def: null, quelle: "flow", status: status || "Unbekannt",
                    warnung: d.fehler || "" };
         }
         warnung = d?.fehler || "Der Server kennt diese Umfrage nicht.";
